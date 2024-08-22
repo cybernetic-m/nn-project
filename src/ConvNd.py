@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as F     
 
 class ConvNd(nn.module):
-    def __init__(self, hidden_dim, padding, stride, in_channels, out_channels):
+    def __init__(self, padding, stride, in_channels, out_channels, hidden_dim=256):
         super.__init__(ConvNd)
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -33,8 +33,8 @@ class ConvNd(nn.module):
                 #get kernel value at that position
                 ker_pos = self.get_pos_kern(Ci)
                 kernLin.append(ker_pos)
-            kernel.append(kernLin)
-        return ..., len(shape)
+            kernel.append(torch.tensor(kernLin))
+        return torch.tensor(kernel), len(shape)
 
     def get_pos_kern(self,coord):
         x = F.relu(self.Gin(coord))
