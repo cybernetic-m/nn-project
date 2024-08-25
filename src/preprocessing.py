@@ -82,6 +82,9 @@ def Resampling(waveform, sample_rate, frequency = [8000, 16000, 22050]):
     return waveform
 
 def invert_audio(waveform):
+    return waveform[::-1]
+
+def flip_waveform(waveform):
     return -waveform
 
 def speed_perturbation(waveform, sample_rate, speed_factor=1.1):
