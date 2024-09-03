@@ -3,10 +3,11 @@ from torch import nn
 import torch.nn.functional as F     
 
 class ConvNd(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size, dilation=1, padding=0, stride=1, hidden_dim=256):
+    def __init__(self, in_channels, out_channels, data_dim, kernel_size, dilation=1, padding=0, stride=1, hidden_dim=256):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
+        self.data_dim = data_dim  
         self.padding = padding
         self.stride = stride
         self.dilation = dilation
