@@ -3,14 +3,14 @@ from torch import nn
 import torch.nn.functional as F  
 from torch.nn.utils import weight_norm  
 
-class mlp_generator (nn.Module):
+class conv_generator(nn.Module):
 
     def __init__(self, input_channels, output_channels, hidden_dim, omega_0 , dropout_rate, bias = True):
 
-        super(mlp_generator,self).__init__()
+        super(conv_generator,self).__init__()
 
         self.omega_0 = omega_0
-
+        
         self.linear_input = weight_norm(nn.Conv1d(
             input_channels,
             hidden_dim,
@@ -46,7 +46,7 @@ class mlp_generator (nn.Module):
 
 
     def forward(self,x):
-        x1 = self.linear_input(x)
+        x1 = self.linear_input(x) 
         print("Linear + Weight ->:",x1.shape)
         x1 = self.omega_0 * x1
         print("Multiply ->:",x1.shape)
@@ -80,7 +80,7 @@ rel_positions = (torch.linspace(-1.0, 11, kernel_dim).unsqueeze(0).unsqueeze(0))
 
 print(rel_positions)
 
-kernel_gen = mlp_generator(
+kernel_gen = conv_generator(
         input_channels = 1,
         output_channels = 2,
         hidden_dim = 32,
