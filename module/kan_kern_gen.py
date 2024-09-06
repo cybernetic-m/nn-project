@@ -54,8 +54,8 @@ class mlp_generator(nn.Module):
         print("Linear + Weight ->:",x1.shape)
         x1 = self.omega_0 * x1
         print("Multiply ->:",x1.shape)
-        x1 = self.instance_norm1(x1)
-        print("Norm ->:",x1.shape)
+        #x1 = self.instance_norm1(x1)
+        #print("Norm ->:",x1.shape)
         x1 = torch.sin(x1)
         print("Activation Function ->:",x1.shape)
 
@@ -63,8 +63,8 @@ class mlp_generator(nn.Module):
         print("Linear + Weight ->:",x2.shape)
         x2 = self.omega_0 * x2
         print("Multiply ->:",x2.shape)
-        x2 = self.instance_norm2(x2)
-        print("Norm ->:",x2.shape)
+        #x2 = self.instance_norm2(x2)
+        #print("Norm ->:",x2.shape)
         x2 = torch.sin(x2)
         print("Activation Function ->:",x2.shape)
 
