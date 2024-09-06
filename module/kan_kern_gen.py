@@ -1,7 +1,10 @@
+#just a test
+
 import torch
 from torch import nn
 import torch.nn.functional as F  
 from torch.nn.utils import weight_norm  
+from kan import KAN
 
 class mlp_generator(nn.Module):
 
@@ -13,21 +16,21 @@ class mlp_generator(nn.Module):
         self.output_channels = output_channels
         self.omega_0 = omega_0
         
-        self.linear_input = weight_norm(nn.Linear(
-            input_channels,
-            hidden_dim,
+        self.linear_input = weight_norm(KAN(
+            [input_channels,
+            hidden_dim],
             bias=bias
         ))
 
-        self.linear_hidden = weight_norm(nn.Linear(
-            hidden_dim,
-            hidden_dim,
+        self.linear_hidden = weight_norm(KAN(
+            [hidden_dim,
+            hidden_dim],
             bias=bias
         ))
 
-        self.linear_output = weight_norm(nn.Linear(
-            hidden_dim,
-            output_channels*kernel_dim,
+        self.linear_output = weight_norm(KAN(
+            [hidden_dim,
+            output_channels*kernel_dim],
             bias=bias
         ))
 
