@@ -4,7 +4,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F  
 from torch.nn.utils import weight_norm  
-from kan import KAN
+from kan import multKAN as KAN
 
 class mlp_generator(nn.Module):
 

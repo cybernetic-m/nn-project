@@ -4,7 +4,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F  
 from torch.nn.utils import weight_norm
-from ..lib.KANConv import KAN_Convolutional_Layer  
+from Convkan import ConvKAN
 
 class conv_generator(nn.Module):
 
@@ -14,21 +14,21 @@ class conv_generator(nn.Module):
 
         self.omega_0 = omega_0
         
-        self.linear_input = weight_norm(nn.KAN_Convolutional_Layer(
+        self.linear_input = weight_norm(ConvKAN(
             input_channels,
             hidden_dim,
             kernel_size=1,
             bias=bias
         ))
 
-        self.linear_hidden = weight_norm(nn.KAN_Convolutional_Layer(
+        self.linear_hidden = weight_norm(ConvKAN(
             hidden_dim,
             hidden_dim,
             kernel_size=1,
             bias=bias
         ))
 
-        self.linear_output = weight_norm(nn.KAN_Convolutional_Layer(
+        self.linear_output = weight_norm(ConvKAN(
             hidden_dim,
             output_channels,
             kernel_size=1,
