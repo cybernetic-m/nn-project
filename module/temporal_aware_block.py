@@ -78,6 +78,8 @@ class TempAw_Block(nn.Module):
 
         return y
     
+    def dyn_fus():
+    
 
 nb_filters=64
 kernel_size=2

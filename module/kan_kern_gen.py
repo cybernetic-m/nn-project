@@ -6,11 +6,11 @@ import torch.nn.functional as F
 from torch.nn.utils import weight_norm  
 from kan import multKAN as KAN
 
-class mlp_generator(nn.Module):
+class kan_generator(nn.Module):
 
     def __init__(self, input_channels, output_channels, kernel_dim, hidden_dim, omega_0 , dropout_rate, bias = True):
 
-        super(mlp_generator, self).__init__()
+        super(kan_generator, self).__init__()
 
         self.kernel_dim = kernel_dim
         self.output_channels = output_channels

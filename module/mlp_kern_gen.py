@@ -45,7 +45,7 @@ class mlp_generator(nn.Module):
 
 
     def forward(self,x):
-        x1_flatten = x.view(x.shape[0], x.shape[1]*x.shape[2])   # Flattening Ex. [10, 2, 100] -> [10, 200] Mantain Batch_Size
+        x1_flatten = x.view(x.shape[0], x.shape[1]*x.shape[2])   # Flattening Ex. [1, 1, 10 (step_size_dim)] -> [1, 10 (linspace tensor)] Mantain Batch_Size
         print("Flattening ->:",x1_flatten.shape)
         x1 = self.linear_input(x1_flatten) 
         print("Linear + Weight ->:",x1.shape)
