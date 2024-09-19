@@ -1,6 +1,5 @@
 import os
 from tqdm import tqdm
-import gdown
 import zipfile
 import shutil
 import random
@@ -11,6 +10,7 @@ def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
 
   # Try to download the dataset if the dataset was not already downloaded
   try:
+    import gdown # type: ignore
     if not(os.path.exists(extract_dir)):
       gdown.download(
           download_link,
