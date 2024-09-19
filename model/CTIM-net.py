@@ -7,6 +7,7 @@ dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../da
 sys.path.append(module_path)
 sys.path.append(dataloader_path)
 
+from ckconv import ckconv
 from temporal_aware_block import TempAw_Block
 from preprocessing import invert_audio
 from dyn_fus import Dynamic_Fusion
@@ -17,23 +18,35 @@ import torch.nn.functional as F
 
 class CTIM_network(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, cont=False):
         
         super(CTIM_network,self).__init__()
-        
-        self.conv_forward = nn.Conv1d(
-            in_channels= in_channels,
-            out_channels= n_filter,
-            kernel_size=1,
-            dilation = 1
-        )
 
-        self.conv_reverse = nn.Conv1d(
-            in_channels= in_channels,
-            out_channels= n_filter,
-            kernel_size=1,
-            dilation = 1
-        )
+        if cont:
+            self.conv_forward = ckconv(
+                in_channels=in_channels,
+                out_channels = n_filter
+            )
+
+            self.conv_reverse = ckconv(
+                in_channels=in_channels,
+                out_channels = n_filter
+            )
+
+        else:
+            self.conv_forward = nn.Conv1d(
+                in_channels= in_channels,
+                out_channels= n_filter,
+                kernel_size=1,
+                dilation = 1
+            )
+
+            self.conv_reverse = nn.Conv1d(
+                in_channels= in_channels,
+                out_channels= n_filter,
+                kernel_size=1,
+                dilation = 1
+            )
         
         self.TempAw_Blocks_forward = nn.ModuleList()
         self.TempAw_Blocks_reverse = nn.ModuleList()

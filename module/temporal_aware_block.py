@@ -1,29 +1,43 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-
+from ckconv import ckconv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, dropout_rate=0):
+    def __init__(self, dilation_rate, n_filter, kernel_size, cont=False, dropout_rate=0):
 
         super(TempAw_Block,self).__init__()
         
         self.kernel_size = kernel_size
+        self.dilation_rate = dilation_rate
+        self.cont = cont
 
-        self.conv1 = nn.Conv1d(
-            in_channels=n_filter,
-            out_channels = n_filter,
-            kernel_size=kernel_size,
-            dilation=dilation_rate,
-        )
+        if cont:
+            self.conv1 = ckconv(
+                in_channels=n_filter,
+                out_channels = n_filter
+            )
 
-        self.conv2 = nn.Conv1d(
-            in_channels=n_filter,
-            out_channels = n_filter,
-            kernel_size=kernel_size,
-            dilation=dilation_rate,
-        )
+            self.conv2 = ckconv(
+                in_channels=n_filter,
+                out_channels = n_filter
+            )
+        
+        else:
+            self.conv1 = nn.Conv1d(
+                in_channels=n_filter,
+                out_channels = n_filter,
+                kernel_size=kernel_size,
+                dilation=dilation_rate,
+            )
+
+            self.conv2 = nn.Conv1d(
+                in_channels=n_filter,
+                out_channels = n_filter,
+                kernel_size=kernel_size,
+                dilation=dilation_rate,
+            )
 
         self.batch_norm1 = nn.BatchNorm1d(
             num_features=n_filter
@@ -48,22 +62,22 @@ class TempAw_Block(nn.Module):
             padding='same'
         )
 
-        self.dilation_rate = dilation_rate
+
 
 
     def forward(self, x):
-
-        x2 = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
+        if not self.cont:
+            x = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
         #print("Padding Causal1", x2.shape)
         #print("Padding Causal1", x2)
 
-        x2 = self.conv1(x2)
+        x2 = self.conv1(x)
         x2 = self.batch_norm1(x2)
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
-
-        x3 = F.pad(x2, ((self.kernel_size-1) * self.dilation_rate, 0))  # Padding Causal 2
-        x3 = self.conv2(x3)
+        if not self.cont:
+            x2 = F.pad(x2, ((self.kernel_size-1) * self.dilation_rate, 0))  # Padding Causal 2
+        x3 = self.conv2(x2)
         x3 = self.batch_norm2(x3)
         x3 = F.relu(x3)
         x3 = self.spatial_drop2(x3)

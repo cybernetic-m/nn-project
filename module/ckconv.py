@@ -8,7 +8,7 @@ from convKan_kern_gen import convKan_generator
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim, omega_0 , dropout_rate, generator_type, data_dim=1, bias = True):
+    def __init__(self, input_channels, output_channels, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', data_dim=1, bias = True):
 
         super(CKConv, self).__init__()
 
