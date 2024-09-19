@@ -1,3 +1,4 @@
+# TO DO: add initialization of weight using gaussian
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -56,13 +57,13 @@ class CKConv(nn.Module):
     def forward(self, x):
         # Input shape: torch.Size([1, 2, 100]) Stereo Sample (2 channels)
         rel_pos = self.create_rel_positions(x) # torch.Size([1, 1, 100])
-        print("rel_pos:", rel_pos)
+        #print("rel_pos:", rel_pos)
         print("rel_pos shape:", rel_pos.shape)
         conv_kernel = self.kernel_gen(rel_pos).view(-1, x.shape[1], x.shape[2])
-        print("conv_kernel:", conv_kernel)
+        #print("conv_kernel:", conv_kernel)
         print("conv_kernel shape:", conv_kernel.shape)
         x, conv_kernel = self.causal_padding(x, conv_kernel)
-        print("x after causal padding:", x, "\nkernel after causal padding:", conv_kernel)
+        #print("x after causal padding:", x, "\nkernel after causal padding:", conv_kernel)
         print("x shape after causal padding:", x.shape, "\nkernel shape after causal padding:", conv_kernel.shape)
         out = self.conv(x, conv_kernel, bias = self.bias, padding=0)
         print("out shape:", out.shape)
@@ -146,6 +147,4 @@ ckconv = CKConv(
     )
 
 out = ckconv(tensor)
-
-print(out)
 

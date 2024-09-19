@@ -48,16 +48,16 @@ class conv_generator(nn.Module):
     def forward(self,x):
         print("Input shape:", x.shape)
         x1 = self.linear_input(x)
-        print("Linear + Weight ->:", x1) 
+        #print("Linear + Weight ->:", x1) 
         print("Linear + Weight ->:",x1.shape)
         x1 = self.omega_0 * x1
-        print("Multiply ->:",x1)
+        #print("Multiply ->:",x1)
         print("Multiply ->:",x1.shape)
         x1 = self.batch_norm1(x1)
-        print("Norm ->:",x1)
+        #print("Norm ->:",x1)
         print("Norm ->:",x1.shape)
         x1 = torch.sin(x1)
-        print("Activation Function ->:",x1)
+        #print("Activation Function ->:",x1)
         print("Activation Function ->:",x1.shape)
 
         x2 = self.linear_hidden(x1)
@@ -72,7 +72,7 @@ class conv_generator(nn.Module):
         x3 = self.linear_output(x2)
         print("Linear + Weight ->:",x3.shape)
         out = self.dropout(x3)
-        print("Dropout ->:",out)
+        #print("Dropout ->:",out)
         print("Dropout ->:",out.shape)
 
         return out

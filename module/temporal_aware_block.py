@@ -60,7 +60,6 @@ class TempAw_Block(nn.Module):
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
 
-
         x3 = F.pad(x2, (self.kernel_size-1,0))  # Padding Causal 2
         x3 = self.conv2(x3)
         x3 = self.batch_norm2(x3)
@@ -69,18 +68,17 @@ class TempAw_Block(nn.Module):
 
         x3 = F.sigmoid(x3)
 
-        if x.shape[1] != x3.shape[1]:
+        if x.shape[-1] != x3.shape[-1]:
             x = self.conv_input(x)
             
-        #print("Here", x.shape)
-        #print("Here", x3.shape)
+        print("Here", x.shape)
+        print("Here", x3.shape)
         y = torch.mul(x,x3)
 
         return y
     
-    def dyn_fus():
     
-
+'''
 nb_filters=64
 kernel_size=2
 dilation_rate=1
@@ -98,6 +96,8 @@ t = torch.rand(1,64,10)
 print(t)
 
 features = tab(t)
+
+'''
         
         
 
