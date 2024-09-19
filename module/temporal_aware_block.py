@@ -48,19 +48,21 @@ class TempAw_Block(nn.Module):
             padding='same'
         )
 
+        self.dilation_rate = dilation_rate
+
 
     def forward(self, x):
 
-        x2 = F.pad(x, (self.kernel_size-1, 0)) # Padding Causal 1
-        #print("Padding Causal", x2.shape)
-        #print("Padding Causal", x2)
+        x2 = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
+        #print("Padding Causal1", x2.shape)
+        #print("Padding Causal1", x2)
 
         x2 = self.conv1(x2)
         x2 = self.batch_norm1(x2)
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
 
-        x3 = F.pad(x2, (self.kernel_size-1,0))  # Padding Causal 2
+        x3 = F.pad(x2, ((self.kernel_size-1) * self.dilation_rate, 0))  # Padding Causal 2
         x3 = self.conv2(x3)
         x3 = self.batch_norm2(x3)
         x3 = F.relu(x3)
@@ -68,11 +70,11 @@ class TempAw_Block(nn.Module):
 
         x3 = F.sigmoid(x3)
 
-        if x.shape[-1] != x3.shape[-1]:
+        if x.shape[2] != x3.shape[2]:
             x = self.conv_input(x)
             
-        print("Here", x.shape)
-        print("Here", x3.shape)
+        #print("x", x.shape)
+        #print("x3", x3.shape)
         y = torch.mul(x,x3)
 
         return y

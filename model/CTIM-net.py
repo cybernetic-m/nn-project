@@ -77,7 +77,7 @@ class CTIM_network(nn.Module):
             g_tensor = self.glob_avd_1d(x_sum)
             g_list.append(g_tensor)
         g = torch.cat(g_list)
-        
+        print(g.shape)
         # Dynamic Fusion block
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
         out = gdrf.squeeze(gdrf, axis=-1) # Eliminate the last "1" (column vector) [1, 10, 1] -> [1, 10]
@@ -90,7 +90,7 @@ t = torch.rand(1,2,100)
 ctim = CTIM_network(
     kernel_size=2, 
     dropout_rate=0.1, 
-    n_temporal_aware_block=2, 
+    n_temporal_aware_block=3, 
     n_filter=64, 
     in_channels=2
 )

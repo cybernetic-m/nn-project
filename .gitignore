@@ -1,3 +1,6 @@
 .DS_Store
-.venv/
+.venv
 data
+.vscode
+dataloader/__pycache__
+module/__pycache__
