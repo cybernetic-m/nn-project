@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+
 from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
@@ -31,7 +32,7 @@ class CTIM(nn.Module):
         self.num_classes = num_classes
 
         self.loss_fn = nn.CrossEntropyLoss()  # Loss definition
-        self.optimizer = 
+        self.optimizer = ...
 
     def forward(self, x):
         x1 = self.ctim_net(x)
