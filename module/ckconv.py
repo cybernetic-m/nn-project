@@ -8,7 +8,7 @@ from convKan_kern_gen import convKan_generator
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True):
+    def __init__(self, input_channels, output_channels, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True, device='cpu'):
 
         super(CKConv, self).__init__()
 
@@ -20,7 +20,8 @@ class CKConv(nn.Module):
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
-            bias= bias
+            bias= bias,
+            device=device
             )
         elif generator_type == 'convKan':
             self.kernel_gen = convKan_generator(
@@ -29,7 +30,8 @@ class CKConv(nn.Module):
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
-            bias= bias
+            bias= bias,
+            device=device
             )
         else:
             print('error in generator type using conv as default')
@@ -39,14 +41,16 @@ class CKConv(nn.Module):
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
-            bias= bias
+            bias= bias,
+            device=device
             )
 
         self.conv =  F.conv1d
         self.sr_change = 1.0
+        self.device = device
 
         if bias:
-            self.bias = torch.nn.Parameter(torch.Tensor(output_channels))
+            self.bias = torch.nn.Parameter(torch.Tensor(output_channels)).to(device)
             self.bias.data.fill_(value=0.0)
         else:
             self.bias = None
@@ -59,6 +63,7 @@ class CKConv(nn.Module):
             self.output_len = output_len 
         else:
             print("Error: output_len should be a non-negative number!")
+
         
 
     def forward(self, x):
@@ -120,9 +125,9 @@ class CKConv(nn.Module):
     
         rel_positions = (
                 torch.linspace(-1.0, max_rel_pos, step_size)
-                #.cuda()
                 .unsqueeze(0)
                 .unsqueeze(0)
+                .to(self.device)
             )
         return rel_positions
 
@@ -143,19 +148,19 @@ class CKConv(nn.Module):
                 x = F.pad(x, [self.output_len - 1,0], value=0.0)
 
         return x, conv_kernel
+if __name__ == '__main__' :
+    tensor = torch.randn(1,2,145)
 
-tensor = torch.randn(1,2,145)
+    ckconv = CKConv(
+            input_channels = 2,
+            output_channels = 2,
+            hidden_dim = 32,
+            generator_type= 'conv',
+            output_len=50,
+            bias = False,
+            omega_0 = 1,
+            dropout_rate = 0.5,
+        )
 
-ckconv = CKConv(
-        input_channels = 2,
-        output_channels = 2,
-        hidden_dim = 32,
-        generator_type= 'conv',
-        output_len=50,
-        bias = False,
-        omega_0 = 1,
-        dropout_rate = 0.5,
-    )
-
-out = ckconv(tensor)
+    out = ckconv(tensor)
 

@@ -5,7 +5,7 @@ from torch.nn.utils import weight_norm
 
 class conv_generator(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim, omega_0 , dropout_rate, bias = True):
+    def __init__(self, input_channels, output_channels, hidden_dim, omega_0 , dropout_rate, bias = True, device='cpu'):
 
         super(conv_generator,self).__init__()
 
@@ -15,29 +15,34 @@ class conv_generator(nn.Module):
             input_channels,
             hidden_dim,
             kernel_size=1,
-            bias=bias
+            bias=bias,
+            device=device
         ))
 
         self.linear_hidden = weight_norm(nn.Conv1d(
             hidden_dim,
             hidden_dim,
             kernel_size=1,
-            bias=bias
+            bias=bias,
+            device=device
         ))
 
         self.linear_output = weight_norm(nn.Conv1d(
             hidden_dim,
             output_channels,
             kernel_size=1,
-            bias=bias
+            bias=bias,
+            device=device
         ))
 
         self.batch_norm1 = nn.BatchNorm1d(
-            num_features=hidden_dim
+            num_features=hidden_dim,
+            device=device
         )
 
         self.batch_norm2 = nn.BatchNorm1d(
-            num_features=hidden_dim
+            num_features=hidden_dim,
+            device=device
         )
 
         self.dropout = nn.Dropout(

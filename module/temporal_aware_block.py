@@ -5,7 +5,7 @@ from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, cont=False, dropout_rate=0):
+    def __init__(self, dilation_rate, n_filter, kernel_size, cont=False, dropout_rate=0, device='cpu'):
 
         super(TempAw_Block,self).__init__()
         
@@ -16,12 +16,14 @@ class TempAw_Block(nn.Module):
         if cont:
             self.conv1 = CKConv(
                 input_channels=n_filter,
-                output_channels = n_filter
+                output_channels = n_filter,
+                device=device
             )
 
             self.conv2 = CKConv(
                 input_channels=n_filter,
-                output_channels = n_filter
+                output_channels = n_filter,
+                device=device
             )
         
         else:
@@ -30,6 +32,7 @@ class TempAw_Block(nn.Module):
                 out_channels = n_filter,
                 kernel_size=kernel_size,
                 dilation=dilation_rate,
+                device=device
             )
 
             self.conv2 = nn.Conv1d(
@@ -37,14 +40,17 @@ class TempAw_Block(nn.Module):
                 out_channels = n_filter,
                 kernel_size=kernel_size,
                 dilation=dilation_rate,
+                device=device
             )
 
         self.batch_norm1 = nn.BatchNorm1d(
-            num_features=n_filter
+            num_features=n_filter, 
+            device=device
         )
 
         self.batch_norm2 = nn.BatchNorm1d(
-            num_features=n_filter
+            num_features=n_filter,
+            device=device
         )
         
         self.spatial_drop1 = nn.Dropout1d(
@@ -59,7 +65,8 @@ class TempAw_Block(nn.Module):
             in_channels= n_filter,
             out_channels = n_filter,
             kernel_size=1,
-            padding='same'
+            padding='same',
+            device=device
         )
 
 
@@ -97,31 +104,21 @@ class TempAw_Block(nn.Module):
         return y
     
     
-'''
-nb_filters=64
-kernel_size=2
-dilation_rate=1
-dropout_rate=0.1
+if __name__ == '__main__' :
+    nb_filters=64
+    kernel_size=2
+    dilation_rate=1
+    dropout_rate=0.1
 
 
-tab = TempAw_Block(
-    n_filter=nb_filters, 
-    kernel_size=kernel_size, 
-    dilation_rate=dilation_rate, 
-    dropout_rate=dropout_rate
-)
+    tab = TempAw_Block(
+        n_filter=nb_filters, 
+        kernel_size=kernel_size, 
+        dilation_rate=dilation_rate, 
+        dropout_rate=dropout_rate
+    )
 
-t = torch.rand(1,64,10)
-print(t)
+    t = torch.rand(1,64,10)
+    print(t)
 
-features = tab(t)
-
-'''
-        
-        
-
-
-
-
-        
-        
+    features = tab(t)

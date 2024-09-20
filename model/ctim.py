@@ -6,7 +6,7 @@ from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, output_len, num_classes, use_kan = False, cont=False):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, output_len, num_classes, use_kan = False, cont=False, device='cpu'):
         
         super(CTIM,self).__init__()
 
@@ -18,6 +18,7 @@ class CTIM(nn.Module):
             in_channels = in_channels,
             cont = cont,
             output_len = output_len,
+            device = device
         )
 
         if use_kan == True:
@@ -27,12 +28,10 @@ class CTIM(nn.Module):
                 in_features = output_len,
                 out_features = num_classes,
                 bias = True,
+                device=device
             )
 
         self.num_classes = num_classes
-
-        self.loss_fn = nn.CrossEntropyLoss()  # Loss definition
-        self.optimizer = ...
 
     def forward(self, x):
         x1 = self.ctim_net(x)
@@ -40,21 +39,26 @@ class CTIM(nn.Module):
         out = F.softmax(x1, dim=1)
 
         return out
-    
-t = torch.rand(1,2,156)
 
-ctim = CTIM(
-    kernel_size=2, 
-    dropout_rate=0.1, 
-    n_temporal_aware_block=3, 
-    n_filter=64, 
-    in_channels=2,
-    cont=True,
-    output_len=50,
-    num_classes = 7,
-    use_kan = False,
-)
+if __name__ == '__main__' :
 
-out = ctim(t)
+    device='cuda'
 
-print(torch.sum(out))
+    t = torch.rand(1,2,156,device=device)
+
+    ctim = CTIM(
+        kernel_size=2, 
+        dropout_rate=0.1, 
+        n_temporal_aware_block=3, 
+        n_filter=64, 
+        in_channels=2,
+        cont=True,
+        output_len=50,
+        num_classes = 7,
+        use_kan = False,
+        device=device
+    )
+
+    out = ctim(t)
+
+    print(torch.sum(out))
