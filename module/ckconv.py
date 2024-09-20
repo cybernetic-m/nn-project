@@ -8,14 +8,14 @@ from convKan_kern_gen import convKan_generator
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', data_dim=1, bias = True):
+    def __init__(self, input_channels, output_channels, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True):
 
         super(CKConv, self).__init__()
 
         
         if generator_type == 'conv':
             self.kernel_gen = conv_generator(
-            input_channels = data_dim,
+            input_channels = 1,
             output_channels = input_channels * output_channels,
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
@@ -42,7 +42,7 @@ class CKConv(nn.Module):
             bias= bias
             )
 
-        self.conv = getattr(F, f"conv{data_dim}d")
+        self.conv =  F.conv1d
         self.sr_change = 1.0
 
         if bias:
@@ -52,27 +52,32 @@ class CKConv(nn.Module):
             self.bias = None
 
         self.register_buffer("previous_length", torch.zeros(1).int(), persistent=True)
+
+        # If output_len = 0 => step_size of kernel_gen will be previous or current length
+        # Else output_len > 0 => compute a desired (standard) number of features length for Continuous TIM-net
+        if output_len >= 0:
+            self.output_len = output_len 
+        else:
+            print("Error: output_len should be a non-negative number!")
         
 
     def forward(self, x):
         # Input shape: torch.Size([1, 2, 100]) Stereo Sample (2 channels)
         rel_pos = self.create_rel_positions(x) # torch.Size([1, 1, 100])
-        #print("rel_pos:", rel_pos)
-        #print("rel_pos shape:", rel_pos.shape)
-        conv_kernel = self.kernel_gen(rel_pos).view(-1, x.shape[1], x.shape[2])
-        #print("conv_kernel:", conv_kernel)
-        #print("conv_kernel shape:", conv_kernel.shape)
+        print("rel_pos:", rel_pos)
+        print("rel_pos shape:", rel_pos.shape)
+        conv_kernel = self.kernel_gen(rel_pos).view(-1, x.shape[1], x.shape[2]) # [1, 4, 100] -> [2, 2, 100]
+        print("conv_kernel:", conv_kernel)
+        print("conv_kernel shape:", conv_kernel.shape)
         x, conv_kernel = self.causal_padding(x, conv_kernel)
-        #print("x after causal padding:", x, "\nkernel after causal padding:", conv_kernel)
-        #print("x shape after causal padding:", x.shape, "\nkernel shape after causal padding:", conv_kernel.shape)
+        print("x after causal padding:", x, "\nkernel after causal padding:", conv_kernel)
+        print("x shape after causal padding:", x.shape, "\nkernel shape after causal padding:", conv_kernel.shape)
         out = self.conv(x, conv_kernel, bias = self.bias, padding=0)
-        #print("out shape:", out.shape)
+        print("out shape:", out.shape)
         
         return out
     
-
-    @staticmethod
-    def calculate_max(previous_length, current_length):
+    def calculate_max(self, previous_length, current_length):
 
         # Calculate Sampling Rate change
         # Ex. previous_length = 10 (samples), current_length = 5 (samples) => sr_change = 2 (double sampling rate)
@@ -92,13 +97,15 @@ class CKConv(nn.Module):
             n_interval = (previous_length - 1) % sr_change  # n_interval = 9 % 2 = 1 
             length_interval = n_interval*previous_step
             max_rel_pos = 1 - length_interval
-
+            
         # Case Upsampling: previous_length = 5 (samples), current_length = 10 (samples) => sr_change = 0.5
         else:
             step_size = current_length
             n_interval = (current_length - 1) % (1/sr_change)
             length_interval = n_interval*current_step
             max_rel_pos = 1 + length_interval
+            
+            
 
         return step_size, max_rel_pos, sr_change
 
@@ -119,28 +126,32 @@ class CKConv(nn.Module):
             )
         return rel_positions
 
-    @staticmethod
-    def causal_padding(x, conv_kernel):
-
+    def causal_padding(self, x, conv_kernel):
+        
         #1. Add zeros to kernel if the kernel_size is even
         if conv_kernel.shape[-1] % 2 == 0:     # Check if it is even
              # Add [1,0] one zero to the left and zero zeros to the right
             conv_kernel = F.pad(conv_kernel, [1,0], value=0.0) # Ex kernel = [1, 1] => kernel = [0, 1, 1]
 
-        #2. Padding of the input: add zeroes to the left of dimensione kernel_size-1 to have causality
-        x = F.pad(x, [conv_kernel.shape[-1] - 1,0], value=0.0)   # Ex. x = [1, 2, 3, 4] kernel = [1, 1, 1] => x = [0, 0, 1, 2, 3, 4]
+        if self.output_len == 0:
+            #2. Padding of the input: add zeroes to the left of dimensione kernel_size-1 to have causality
+            x = F.pad(x, [conv_kernel.shape[-1] - 1,0], value=0.0)   # Ex. x = [1, 2, 3, 4] kernel = [1, 1, 1] => x = [0, 0, 1, 2, 3, 4]
+        else:
+            if x.shape[-1] % 2 == 0:
+                x = F.pad(x, [self.output_len,0], value=0.0)
+            else:
+                x = F.pad(x, [self.output_len - 1,0], value=0.0)
 
         return x, conv_kernel
 
-
-tensor = torch.randn(1,2,100)
+tensor = torch.randn(1,2,145)
 
 ckconv = CKConv(
         input_channels = 2,
         output_channels = 2,
         hidden_dim = 32,
-        data_dim = 1,
         generator_type= 'conv',
+        output_len=50,
         bias = False,
         omega_0 = 1,
         dropout_rate = 0.5,

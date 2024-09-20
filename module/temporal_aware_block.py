@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from ckconv import ckconv
+from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
@@ -14,14 +14,14 @@ class TempAw_Block(nn.Module):
         self.cont = cont
 
         if cont:
-            self.conv1 = ckconv(
-                in_channels=n_filter,
-                out_channels = n_filter
+            self.conv1 = CKConv(
+                input_channels=n_filter,
+                output_channels = n_filter
             )
 
-            self.conv2 = ckconv(
-                in_channels=n_filter,
-                out_channels = n_filter
+            self.conv2 = CKConv(
+                input_channels=n_filter,
+                output_channels = n_filter
             )
         
         else:
@@ -66,13 +66,15 @@ class TempAw_Block(nn.Module):
 
 
     def forward(self, x):
-        x_original = x
+        
         if not self.cont:
-            x = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
+            x1 = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
+        else:
+            x1 = x
         #print("Padding Causal1", x2.shape)
         #print("Padding Causal1", x2)
 
-        x2 = self.conv1(x)
+        x2 = self.conv1(x1)
         x2 = self.batch_norm1(x2)
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
@@ -85,12 +87,12 @@ class TempAw_Block(nn.Module):
 
         x3 = F.sigmoid(x3)
 
-        if x_original.shape[2] != x3.shape[2]:
-            x_original = self.conv_input(x)
+        if x.shape[2] != x3.shape[2]:
+            x = self.conv_input(x)
             
-        print("x", x_original.shape)
-        print("x3", x3.shape)
-        y = torch.mul(x_original,x3)
+        #print("x", x.shape)
+        #print("x3", x3.shape)
+        y = torch.mul(x,x3)
 
         return y
     
