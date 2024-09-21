@@ -21,38 +21,20 @@ class CTIM_network(nn.Module):
         
         super(CTIM_network,self).__init__()
 
-        if cont:
-            self.conv_forward = CKConv(
-                input_channels=in_channels,
-                output_channels = n_filter,
-                output_len = output_len,
-                device=device
-            )
+        self.conv_forward = CKConv(
+            input_channels=in_channels,
+            output_channels = n_filter,
+            output_len = output_len,
+            device=device
+        )
 
-            self.conv_reverse = CKConv(
-                input_channels=in_channels,
-                output_channels = n_filter,
-                output_len = output_len,
-                device=device
-            )
+        self.conv_reverse = CKConv(
+            input_channels=in_channels,
+            output_channels = n_filter,
+            output_len = output_len,
+            device=device
+        )
 
-        else:
-            self.conv_forward = nn.Conv1d(
-                in_channels= in_channels,
-                out_channels= n_filter,
-                kernel_size=1,
-                dilation = 1,
-                device=device
-            )
-
-            self.conv_reverse = nn.Conv1d(
-                in_channels= in_channels,
-                out_channels= n_filter,
-                kernel_size=1,
-                dilation = 1,
-                device=device
-            )
-        
         self.TempAw_Blocks_forward = nn.ModuleList()
         self.TempAw_Blocks_reverse = nn.ModuleList()
 
