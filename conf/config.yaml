@@ -11,6 +11,6 @@ model:
   n_temporal_aware_block: 3 
   n_filter: 64
   output_len: 50 
-  cont: False
+  tab_cont: False
   use_kan: False
   kernel_size: 2

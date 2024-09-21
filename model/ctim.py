@@ -25,7 +25,7 @@ class CTIM(nn.Module):
             n_temporal_aware_block = n_temporal_aware_block, 
             n_filter = n_filter, 
             in_channels = in_channels,
-            cont = cont,
+            cont = tab_cont,
             output_len = output_len,
             device = device
         )
