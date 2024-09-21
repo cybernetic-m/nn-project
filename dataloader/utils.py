@@ -3,6 +3,11 @@ from tqdm import tqdm
 import zipfile
 import shutil
 import random
+import json
+from sklearn import metrics
+import sns
+import matplotlib as plt
+import numpy as np
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -61,8 +66,6 @@ def counter_classes (classes, dataset_dir):
   return n_file
   
   
-
-
 def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
 
   split_dir = ['train', 'test', 'val']
@@ -134,3 +137,47 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
   except Exception as error:
     print ("Error in dataset reordering:")
     print(error)
+
+def save_metrics(metrics, path):
+  with open(path, "w") as file:
+    json.dump(metrics, file, indent=4)
+    print("Metrics saved:", path)
+
+def load_metrics(path):
+  if os.path.exists(path):
+    with open(path, 'r') as file:
+      data = json.load(file)
+      print("Metrics loaded", path)
+      return data
+  else:
+    print("The file", path, "does not exists!")
+    
+def calculate_metrics(y_true, y_pred, metrics_dict, epoch):
+
+  current_acc = metrics.accuracy_score(y_true, y_pred)
+  current_prec = metrics.precision_score(y_true, y_pred)
+  current_recall = metrics.precision_score(y_true, y_pred)
+  current_f1_score = metrics.f1_score(y_true, y_pred)
+
+  metrics_dict["epoch"].append(epoch)
+  metrics_dict["accuracy"].append(current_acc)
+  metrics_dict["precision"].append(current_prec)
+  metrics_dict["recall"].append(current_recall)
+  metrics_dict["f1_score"].append(current_f1_score)
+
+  print(f"accuracy: {current_acc*100:.2f}, precision: {current_prec*100:.2f}, recall: {current_recall*100:.2f}, f1-score: {current_f1_score*100:.2f}")
+
+
+def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Matrix', cmap='Oranges'):
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='.2f' if normalize else 'd', cmap=cmap,
+                xticklabels=class_names, yticklabels=class_names)
+
+    plt.title(title)
+    plt.xlabel('Predicted label')
+    plt.ylabel('True label')
+    plt.show()
