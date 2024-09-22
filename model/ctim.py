@@ -30,6 +30,7 @@ class CTIM(nn.Module):
             device = device
         )
 
+        # TO DO (At the moment it is not implemented)
         if use_kan == True:
             self.classifier = ...
         else:
@@ -40,7 +41,9 @@ class CTIM(nn.Module):
                 device=device
             )
 
+        # The number of classes (EMOVO => 7)
         self.num_classes = num_classes
+        self.use_kan = use_kan
 
         if tab_cont and use_kan:
             self.model_name = 'ctimKan'
@@ -59,17 +62,27 @@ class CTIM(nn.Module):
         return out
     
     def training_mode(self):
-        self.ctim_net.train()
+        if self.use_kan == True:
+            self.ctim_net.train(True)
+        else:
+            self.ctim_net.train(True)
+            self.classifier.train(True)
     
     def eval_mode(self):
-        self.ctim_net.eval()
+        if self.use_kan == True:
+            self.ctim_net.eval()
+        else:
+            self.ctim_net.eval()
+            self.classifier.eval()
 
-    def save(self):
+    def save(self, path):
+        # TO DO: Remove models in exceed
         current_datetime = datetime.datetime.now()
         formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H:%M:%S")
-        name = self.model_name + formatted_datetime + '.pt'
+        name = path + '/' + self.model_name + formatted_datetime + '/model.pt'
         torch.save(self.state_dict(), name)
         print("saved:", name)
+        return name
     
     def load(self, formatted_datetime):
         name = self.model_name + formatted_datetime + '.pt'
