@@ -1,4 +1,4 @@
- def train_one_epoch (training_loader, model, loss_fn, optimizer):
+def train_one_epoch (training_loader, model, loss_fn, optimizer):
 
     # Initialization of lists (predictions and true values) and the value of loss_epoch
     y_pred_list = []
@@ -28,7 +28,7 @@
 
         # Add the "batch" predictions and true values to the corrispettive lists
         y_true_list += y_true.tolist()
-        y_pred_list += t_pred.tolist()
+        y_pred_list += y_pred.tolist()
     
     # Average Loss in the epoch
     loss_avg = loss_epoch / i 

@@ -1,3 +1,7 @@
+import os
+import sys
+import torch
+
 # Get the absolute paths of the directories containing the utils functions and train_one_epoch
 utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils'))
 training_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../training'))
@@ -16,7 +20,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
 
     for epoch in range(num_epochs):
         
-        print(f'EPOCH {epochs + 1}:')
+        print(f'EPOCH {epoch + 1}:')
 
         # Compute the average loss and the predictions vs true values
         # Train the model for the single epoch
