@@ -63,7 +63,7 @@ class CTIM_network(nn.Module):
         self.weights = nn.Parameter(torch.rand(n_temporal_aware_block, 1), requires_grad=True).to(device)  
   
     def forward(self, x):
-        reverse_input = invert_audio(x)
+        reverse_input = invert_audio(x[0])
 
         x_forward = self.conv_forward(x)
         x_reverse = self.conv_reverse(reverse_input)
@@ -74,15 +74,15 @@ class CTIM_network(nn.Module):
             x_reverse = tab_reverse(x_reverse)
             x_sum = torch.add(x_forward, x_reverse)
             g_tensor = torch.mean(x_sum, dim=1)
-            print(g_tensor.shape)
+            #print(g_tensor.shape)
             g_list.append(g_tensor)
         g = torch.cat(g_list).view(-1, len(g_list))
-        print(g.shape)
+        #print(g.shape)
         # Dynamic Fusion block
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
-        print(gdrf.shape)
+        #print(gdrf.shape)
         out = gdrf.view(-1, gdrf.shape[0]) # Transpose 
-        print(out.shape)
+        #print(out.shape)
 
         return out
     

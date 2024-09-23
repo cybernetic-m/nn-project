@@ -12,7 +12,7 @@ sys.path.append(training_path)
 
 # Import section
 from utils import calculate_metrics, save_metrics
-from training import train_one_epoch
+from training.train_one_epoch import train_one_epoch
 
 def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_loader, validation_loader, model, loss_fn, optimizer):
     

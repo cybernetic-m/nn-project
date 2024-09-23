@@ -1,10 +1,11 @@
 from torch.utils.data import Dataset
 import os
 import torchaudio
+import torch
 
 class EMOVO_Dataset(Dataset):
 
-  def __init__(self, dataset_dir, transform=None):
+  def __init__(self, dataset_dir, transform=None, device = 'cpu'):
 
     self.dataset_dir = dataset_dir
     self.transform = transform
@@ -18,7 +19,8 @@ class EMOVO_Dataset(Dataset):
       tensor, sample_rate = torchaudio.load(path)
       class_ = self.classes.index(filename.split('-')[0])
       self.data.append((tensor,sample_rate))
-      self.labels.append(class_)
+      self.labels.append(torch.tensor(class_))
+    self.device = device
 
   def __len__(self):
     return len(self.data)
@@ -26,7 +28,8 @@ class EMOVO_Dataset(Dataset):
   def __getitem__(self, idx):
 
     data = self.data[idx]
-    label = self.labels[idx]
+    data[0].to(self.device)
+    label = self.labels[idx].to(self.device)
 
     return data, label
 

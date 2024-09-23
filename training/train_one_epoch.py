@@ -8,7 +8,13 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
     for i, data in enumerate (training_loader):
         
         # Divide the tuple data in inputs tensor and labels tensor (batch_size dimension)
+        #print(data)
         x, y_true = data
+
+        # extract waveform from tuple (waveform, sample_rate)
+        print("x_data",x)
+        x = (x[0].T, x[1])
+        print("x[0].T_data",x)
 
         # Put the gradient to zero for every batch
         optimizer.zero_grad()

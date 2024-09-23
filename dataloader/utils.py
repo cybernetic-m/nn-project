@@ -8,6 +8,7 @@ from sklearn import metrics
 import seaborn as sns
 import matplotlib as plt
 import numpy as np
+from torch.nn.utils.rnn import pack_sequence
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -182,3 +183,21 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
     plt.show()
+
+
+def collate_fn(batch):
+    """
+    Collate function to pack a batch of variable-length tensors.
+    Args:
+        batch (list of Tensors): List of tensors from the dataset, each with shape [2, n].
+    
+    Returns:
+        PackedSequence: Packed tensor with variable-length sequences.
+    """
+    # Batch will be a list of tensors from __getitem__ of Dataset
+    tobepacked = []
+    rest = []
+    for data in batch:
+      tobepacked.append(data[0][0].T)
+      rest.append((data[0][1], data[1]))
+    return pack_sequence(tobepacked, enforce_sorted=False), rest
