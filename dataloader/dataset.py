@@ -17,6 +17,10 @@ class EMOVO_Dataset(Dataset):
     for filename in file_list:
       path = os.path.join(dataset_dir, filename)
       tensor, sample_rate = torchaudio.load(path)
+      if tensor.shape[0] == 1: # if an audio is mono we duplicate the channel to make it stereo 
+        tensor = torch.cat((tensor,tensor))
+        print("fixed a mono track:",filename)
+        torchaudio.save(path, tensor, sample_rate)
       class_ = self.classes.index(filename.split('-')[0])
       self.data.append((tensor,sample_rate))
       self.labels.append(torch.tensor(class_))
@@ -28,7 +32,7 @@ class EMOVO_Dataset(Dataset):
   def __getitem__(self, idx):
 
     data = self.data[idx]
-    data[0].to(self.device)
+    data = (data[0].to(self.device), data[1])
     label = self.labels[idx].to(self.device)
 
     return data, label

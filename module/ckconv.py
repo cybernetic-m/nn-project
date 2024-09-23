@@ -48,6 +48,8 @@ class CKConv(nn.Module):
         self.conv =  F.conv1d
         self.sr_change = 1.0
         self.device = device
+        self.output_channels = output_channels
+        self.input_channels = input_channels
 
         if bias:
             self.bias = torch.nn.Parameter(torch.Tensor(output_channels)).to(device)
@@ -70,9 +72,9 @@ class CKConv(nn.Module):
         # Input shape: torch.Size([1, 2, 100]) Stereo Sample (2 channels)
         rel_pos = self.create_rel_positions(x) # torch.Size([1, 1, 100])
         #print("rel_pos:", rel_pos)
-        print("rel_pos shape:", rel_pos.shape)
-        print("x_shape", x.shape)
-        conv_kernel = self.kernel_gen(rel_pos).view(-1, x.shape[1], x.shape[2]) # [1, 4, 100] -> [2, 2, 100]
+        #print("rel_pos shape:", rel_pos.shape)
+        #print("x_shape", x.shape)
+        conv_kernel = self.kernel_gen(rel_pos).view(self.output_channels, self.input_channels, x.shape[2]) # [1, 4, 100] -> [2, 2, 100] [out_ch, in_ch, kern_size]
         #print("conv_kernel:", conv_kernel)
         #print("conv_kernel shape:", conv_kernel.shape)
         x, conv_kernel = self.causal_padding(x, conv_kernel)
@@ -88,7 +90,8 @@ class CKConv(nn.Module):
         # Calculate Sampling Rate change
         # Ex. previous_length = 10 (samples), current_length = 5 (samples) => sr_change = 2 (double sampling rate)
         # Ex. previous_length = 5 (samples), current_length = 10 (samples) => sr_change = 0.5 (half sampling rate)
-        sr_change = previous_length/current_length 
+        sr_change = previous_length/current_length
+        #print("sr_change", sr_change) 
 
         # Compute Current Step Size
         # Ex. previous_length = 10 (samples), current_length = 5 (samples) => sr_change = 2
@@ -99,21 +102,17 @@ class CKConv(nn.Module):
         # Compute Maximum Relative Position
         # Case Downsampling: previous_length = 10 (samples), current_length = 5 (samples) => sr_change = 2
         if sr_change > 1:
-            step_size = previous_length
             n_interval = (previous_length - 1) % sr_change  # n_interval = 9 % 2 = 1 
             length_interval = n_interval*previous_step
             max_rel_pos = 1 - length_interval
             
         # Case Upsampling: previous_length = 5 (samples), current_length = 10 (samples) => sr_change = 0.5
         else:
-            step_size = current_length
             n_interval = (current_length - 1) % (1/sr_change)
             length_interval = n_interval*current_step
             max_rel_pos = 1 + length_interval
             
-            
-
-        return step_size, max_rel_pos, sr_change
+        return max_rel_pos, sr_change
 
 
     def create_rel_positions(self, x):
@@ -122,10 +121,10 @@ class CKConv(nn.Module):
         if self.previous_length[0] == 0:
             self.previous_length[0] = x.shape[-1]
 
-        step_size, max_rel_pos, self.sr_change = self.calculate_max(self.previous_length.item(), x.shape[-1])
+        max_rel_pos, self.sr_change = self.calculate_max(self.previous_length.item(), x.shape[-1])
     
         rel_positions = (
-                torch.linspace(-1.0, max_rel_pos, step_size)
+                torch.linspace(-1.0, max_rel_pos, x.shape[2])
                 .unsqueeze(0)
                 .unsqueeze(0)
                 .to(self.device)

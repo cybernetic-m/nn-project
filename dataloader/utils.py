@@ -156,9 +156,9 @@ def load_metrics(path):
 def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch):
 
   current_acc = metrics.accuracy_score(y_true, y_pred)
-  current_prec = metrics.precision_score(y_true, y_pred)
-  current_recall = metrics.precision_score(y_true, y_pred)
-  current_f1_score = metrics.f1_score(y_true, y_pred)
+  current_prec = metrics.precision_score(y_true, y_pred, average='micro')
+  current_recall = metrics.recall_score(y_true, y_pred, average='micro')
+  current_f1_score = metrics.f1_score(y_true, y_pred, average='micro')
 
   metrics_dict["epoch"].append(epoch)
   metrics_dict["loss"].append(loss)
@@ -183,21 +183,3 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
     plt.show()
-
-
-def collate_fn(batch):
-    """
-    Collate function to pack a batch of variable-length tensors.
-    Args:
-        batch (list of Tensors): List of tensors from the dataset, each with shape [2, n].
-    
-    Returns:
-        PackedSequence: Packed tensor with variable-length sequences.
-    """
-    # Batch will be a list of tensors from __getitem__ of Dataset
-    tobepacked = []
-    rest = []
-    for data in batch:
-      tobepacked.append(data[0][0].T)
-      rest.append((data[0][1], data[1]))
-    return pack_sequence(tobepacked, enforce_sorted=False), rest

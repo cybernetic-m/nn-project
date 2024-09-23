@@ -23,15 +23,15 @@ class CTIM_network(nn.Module):
 
         self.conv_forward = CKConv(
             input_channels=in_channels,
-            output_channels = n_filter,
-            output_len = output_len,
+            output_channels=n_filter,
+            output_len=output_len,
             device=device
         )
 
         self.conv_reverse = CKConv(
             input_channels=in_channels,
-            output_channels = n_filter,
-            output_len = output_len,
+            output_channels=n_filter,
+            output_len=output_len,
             device=device
         )
 
@@ -63,7 +63,7 @@ class CTIM_network(nn.Module):
         self.weights = nn.Parameter(torch.rand(n_temporal_aware_block, 1), requires_grad=True).to(device)  
   
     def forward(self, x):
-        reverse_input = invert_audio(x[0])
+        reverse_input = invert_audio(x)
 
         x_forward = self.conv_forward(x)
         x_reverse = self.conv_reverse(reverse_input)

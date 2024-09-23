@@ -47,7 +47,7 @@ class CTIM(nn.Module):
         self.use_kan = use_kan
 
         # String of the model for saving
-        self.name = ''
+        self.parent_dir = ''
 
         if tab_cont and use_kan:
             self.model_name = 'ctimKan'
@@ -83,12 +83,14 @@ class CTIM(nn.Module):
         current_datetime = datetime.datetime.now() # Take the actual date and time 
         formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H:%M:%S") # Format the string in [2024-06-25_14:06:10]
         # Check if there is a precedent model to remove it
-        if self.name != '':
-            shutil.rmtree(self.name) # remove the precedent model 
-        self.name = path + '/' + self.model_name + formatted_datetime + '/model.pt'  # name: your_path/2024-06-25_14:06:10/model.pt
-        torch.save(self.state_dict(), self.name) # save the model in the precedent path
-        print("saved:", self.name)
-        return self.name
+        if self.parent_dir != '':
+            shutil.rmtree(self.parent_dir) # remove the precedent model
+        self.parent_dir = path + '/' + self.model_name + formatted_datetime 
+        os.mkdir(self.parent_dir)
+        name = self.parent_dir + '/model.pt'  # name: your_path/2024-06-25_14:06:10/model.pt
+        torch.save(self.state_dict(), name) # save the model in the precedent path
+        print("saved:", name)
+        return self.parent_dir
     
     def load(self, formatted_datetime):
         name = self.model_name + formatted_datetime + '.pt'

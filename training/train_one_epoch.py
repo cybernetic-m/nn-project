@@ -1,3 +1,5 @@
+import torch
+
 def train_one_epoch (training_loader, model, loss_fn, optimizer):
 
     # Initialization of lists (predictions and true values) and the value of loss_epoch
@@ -12,9 +14,9 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         x, y_true = data
 
         # extract waveform from tuple (waveform, sample_rate)
-        print("x_data",x)
-        x = (x[0].T, x[1])
-        print("x[0].T_data",x)
+        #print("x_data",x)
+        x = x[0]
+        #print("x[0].T_data",x)
 
         # Put the gradient to zero for every batch
         optimizer.zero_grad()
@@ -23,8 +25,9 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         y_pred = model(x)
 
         # Compute the loss and the gradient
+
         loss_value = loss_fn(y_pred, y_true)
-        loss_fn.backward()
+        loss_value.backward()
 
         # Update the weights
         optimizer.step()
@@ -33,8 +36,15 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         loss_epoch += loss_value
 
         # Add the "batch" predictions and true values to the corrispettive lists
-        y_true_list += y_true.tolist()
-        y_pred_list += y_pred.tolist()
+        #print("y_true", y_true.tolist())
+        y_true_list += y_true.cpu().tolist()
+        y_pred_tmp = torch.argmax(y_pred).cpu()
+        #print("y_pred_tmp", y_pred_tmp)
+        y_pred_list += [y_pred_tmp]
+        '''
+        print("y_pred", y_pred)
+        print("torch.argmax(y_pred)", torch.argmax(y_pred))
+        '''
     
     # Average Loss in the epoch
     loss_avg = loss_epoch / i 

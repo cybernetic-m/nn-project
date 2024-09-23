@@ -28,7 +28,8 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
         loss_avg, y_pred_list, y_true_list = train_one_epoch(training_loader, model, loss_fn, optimizer)
 
         # Calculate the metrics
-        calculate_metrics(y_true_list, y_pred_list, training_metrics_dict, loss_avg, epoch) 
+        print("TRAIN:")
+        calculate_metrics(y_true_list, y_pred_list, training_metrics_dict, loss_avg.tolist(), epoch) 
         
         # Validation part (disable the gradient computation)
         # Set the model in validation mode
@@ -39,24 +40,28 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
             vloss_epoch = 0
             for i, vdata in enumerate (validation_loader):
                 vx, vy_true = vdata
+                vx = vx[0]
                 vy_pred = model(vx)
                 vloss = loss_fn(vy_pred, vy_true)
                 vloss_epoch += vloss
-                vy_pred_list += vy_pred.tolist()
-                vy_true_list += vy_true.tolist()
+                vy_true_list += vy_true.cpu().tolist()
+                vy_pred_tmp = torch.argmax(vy_pred).cpu()
+                vy_pred_list += [vy_pred_tmp]
             vloss_avg = vloss_epoch / i
-            calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg, epoch)
+            print("VALIDATION:")
+            calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg.tolist(), epoch)
 
         print(f'LOSS train {loss_avg} valid {vloss_avg}')
 
         if vloss_avg < best_vloss:
             best_vloss = vloss_avg
-            name_path = model.save() # the name_path is: "your_path/2024-06-25_14:06:10/model.pt"
+            save_path = os.path.join(training_path, "results")
+            parent_dir = model.save(save_path) # the name_path is: "your_path/2024-06-25_14:06:10/model.pt"
     
-    results_path = name_path.split('model.pt') [0]
+    results_path = parent_dir
 
-    name_training_metrics = 'training_metrics.json'
-    name_validation_metrics = 'validation_metrics.json'
+    name_training_metrics = '/training_metrics.json'
+    name_validation_metrics = '/validation_metrics.json'
 
     save_metrics(training_metrics_dict, results_path + name_training_metrics)
     save_metrics(validation_metrics_dict, results_path + name_validation_metrics)
