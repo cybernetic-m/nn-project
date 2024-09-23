@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import os
 import sys
 import datetime
+import shutil
 
 # Get the absolute paths of the directories containing the modules
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../model'))
@@ -45,6 +46,9 @@ class CTIM(nn.Module):
         self.num_classes = num_classes
         self.use_kan = use_kan
 
+        # String of the model for saving
+        self.name = ''
+
         if tab_cont and use_kan:
             self.model_name = 'ctimKan'
         elif tab_cont:
@@ -76,13 +80,15 @@ class CTIM(nn.Module):
             self.classifier.eval()
 
     def save(self, path):
-        # TO DO: Remove models in exceed
-        current_datetime = datetime.datetime.now()
-        formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H:%M:%S")
-        name = path + '/' + self.model_name + formatted_datetime + '/model.pt'
-        torch.save(self.state_dict(), name)
-        print("saved:", name)
-        return name
+        current_datetime = datetime.datetime.now() # Take the actual date and time 
+        formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H:%M:%S") # Format the string in [2024-06-25_14:06:10]
+        # Check if there is a precedent model to remove it
+        if self.name != '':
+            shutil.rmtree(self.name) # remove the precedent model 
+        self.name = path + '/' + self.model_name + formatted_datetime + '/model.pt'  # name: your_path/2024-06-25_14:06:10/model.pt
+        torch.save(self.state_dict(), self.name) # save the model in the precedent path
+        print("saved:", self.name)
+        return self.name
     
     def load(self, formatted_datetime):
         name = self.model_name + formatted_datetime + '.pt'
