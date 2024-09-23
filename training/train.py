@@ -51,11 +51,15 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
 
         if vloss_avg < best_vloss:
             best_vloss = vloss_avg
-            model.save()
+            name_path = model.save() # the name_path is: "your_path/2024-06-25_14:06:10/model.pt"
     
-    # TO DO: CHANGE RESULTS_PATH!!!
-    save_metrics(training_metrics_dict, results_path)
-    save_metrics(validation_metrics_dict, results_path)
+    results_path = name_path.split('model.pt') [0]
+
+    name_training_metrics = 'training_metrics.json'
+    name_validation_metrics = 'validation_metrics.json'
+
+    save_metrics(training_metrics_dict, results_path + name_training_metrics)
+    save_metrics(validation_metrics_dict, results_path + name_validation_metrics)
             
 
 
