@@ -1,0 +1,40 @@
+train:
+  num_epochs: 100
+  batch_size: 1
+  learning_rate: 0.001
+  optimizer: adam
+  early_stopping: True
+  patience: 5
+
+trainlowlr:
+  num_epochs: 100
+  batch_size: 1
+  learning_rate: 0.0001
+  optimizer: adam
+  early_stopping: True
+  patience: 5
+
+trainhighlr:
+  num_epochs: 100
+  batch_size: 1
+  learning_rate: 0.01
+  optimizer: adam
+  early_stopping: True
+  patience: 5
+
+trainlong:
+  num_epochs: 500
+  batch_size: 1
+  learning_rate: 0.001
+  optimizer: adam
+  early_stopping: True
+  patience: 5
+
+model:
+  dropout_rate: 0.1
+  n_temporal_aware_block: 3 
+  n_filter: 64
+  output_len: 50 
+  tab_cont: False
+  use_kan: False
+  kernel_size: 2
