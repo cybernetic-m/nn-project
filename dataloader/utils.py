@@ -139,17 +139,40 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
     print ("Error in dataset reordering:")
     print(error)
 
-def augment_data(prepocess_pipeline, spectogram_pipeline, dataset, path_dir):
-  if (os.path.exists(path_dir)):
-    for waveform, _, _ in dataset:
-      waveformPSP, waveformSP, waveformSAP, waveformSAT = prepocess_pipeline(waveform)
-      spectogramPSP = spectogram_pipeline(waveformPSP)
-      spectogramSP = spectogram_pipeline(waveformSP)
-      spectogramSAP = spectogram_pipeline(waveformSAP)
-      spectogramSAT = spectogram_pipeline(waveformSAT)
-      torchaudio.save(path_dir+'/' ,waveformPSP)
+def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
+  try:
+    if (os.path.exists(dataset_dir)):
 
-  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
+      subdirectories = os.listdir(dataset_dir)
+
+      for subdir in subdirectories:
+        if not(subdir == 'documents'):
+          for filename in os.listdir(os.path.join(dataset_dir, subdir)):
+            file_path = os.path.join(dataset_dir, subdir, filename)
+
+            waveform, sample_rate = torchaudio.load(file_path)
+            waveformPSP, waveformSP, waveformSAP, waveformSAT = preprocess_pipeline(waveform, sample_rate)
+            spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
+            spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
+            spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
+            spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
+
+            save_path = file_path[:-4]+'-PSP.wav'
+            torchaudio.save(save_path, waveformPSP)
+            save_path = file_path[:-4]+'-SP.wav'
+            torchaudio.save(save_path, waveformSP)
+            save_path = file_path[:-4]+'-SAP.wav'
+            torchaudio.save(save_path, waveformSAP)
+            save_path = file_path[:-4]+'-SAT.wav'
+            torchaudio.save(save_path, waveformSAT)
+
+    else:
+      print("Dataset not found")
+
+  except Exception as error:
+    print(error)
+
+#  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
 
 
 def save_metrics(metrics, path):

@@ -1,17 +1,18 @@
 import torch.nn as nn
 from preprocessing import mel_spectogram, mfcc
 
-class preprocessing_pipeline(nn.Module):
-    def __init__(self, sample_rate, log_DCT) -> None:
+class spectogram_pipeline(nn.Module):
+    def __init__(self, mean_signal_length, embedding_length, log_DCT) -> None:
         super().__init__()
-        self.sample_rate = sample_rate
         self.log_DCT = log_DCT
+        self.mean_signal_length = mean_signal_length
+        self.embedding_length = embedding_length
 
-    def forward(self, waveform):
+    def forward(self, waveform, sample_rate):
 
         if self.log_DCT:
-            out = mfcc(waveform, self.sample_rate, self.mean_signal_length, self.embedding_length)
+            out = mfcc(waveform, sample_rate, self.mean_signal_length, self.embedding_length)
         else:
-            out = mel_spectogram(waveform, self.sample_rate, self.mean_signal_length, self.embedding_length)
+            out = mel_spectogram(waveform, sample_rate, self.mean_signal_length, self.embedding_length)
        
         return out
