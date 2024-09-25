@@ -92,10 +92,9 @@ class CTIM(nn.Module):
         print("saved:", name)
         return self.parent_dir
     
-    def load(self, formatted_datetime):
-        name = self.model_name + formatted_datetime + '.pt'
-        self.load_state_dict(torch.load(name))
-        print("loaded:", name)
+    def load(self, path):
+        self.load_state_dict(torch.load(path))
+        print("loaded:", path)
 
 
 if __name__ == '__main__' :

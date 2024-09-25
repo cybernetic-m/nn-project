@@ -1,7 +1,11 @@
-import os
+import torch
 
-training_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../training'))
-save_path = os.path.join(training_path, "results")
-print(save_path)
+def testing(model, test_loader, test_metrics):
+
+    # Set the model in evaluation mode
+    model.eval_mode()
+
+    for data in test_loader:
+        x, y_true = test_loader 
 
 
