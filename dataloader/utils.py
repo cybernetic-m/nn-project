@@ -8,7 +8,7 @@ from sklearn import metrics
 import seaborn as sns
 import matplotlib as plt
 import numpy as np
-from torch.nn.utils.rnn import pack_sequence
+import torchaudio
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -138,6 +138,45 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
   except Exception as error:
     print ("Error in dataset reordering:")
     print(error)
+
+def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
+  save_dir = dataset_dir+'_aug'
+  dataset_dir +='_split'
+  try:
+    if (os.path.exists(dataset_dir)):
+      
+      subdir = 'train'
+      os.makedirs(os.path.join(save_dir, subdir))
+
+      for filename in os.listdir(os.path.join(dataset_dir, subdir)):
+        file_path = os.path.join(dataset_dir, subdir, filename)
+        save_path = os.path.join(save_dir, subdir, filename)
+        
+          
+        waveform, sample_rate = torchaudio.load(file_path)
+        waveformPSP, waveformSP, waveformSAP, waveformSAT = preprocess_pipeline(waveform, sample_rate)
+        spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
+        spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
+        spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
+        spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
+
+        save_path = save_path[:-4]+'-PSP.wav'
+        torchaudio.save(save_path, waveformPSP)
+        save_path = save_path[:-4]+'-SP.wav'
+        torchaudio.save(save_path, waveformSP)
+        save_path = save_path[:-4]+'-SAP.wav'
+        torchaudio.save(save_path, waveformSAP)
+        save_path = save_path[:-4]+'-SAT.wav'
+        torchaudio.save(save_path, waveformSAT)
+
+    else:
+      print("Dataset not found")
+
+  except Exception as error:
+    print(error)
+
+#  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
+
 
 def save_metrics(metrics, path):
   with open(path, "w") as file:
