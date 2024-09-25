@@ -8,7 +8,7 @@ from sklearn import metrics
 import seaborn as sns
 import matplotlib as plt
 import numpy as np
-from torch.nn.utils.rnn import pack_sequence
+import torchaudio
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -138,6 +138,19 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
   except Exception as error:
     print ("Error in dataset reordering:")
     print(error)
+
+def augment_data(prepocess_pipeline, spectogram_pipeline, dataset, path_dir):
+  if (os.path.exists(path_dir)):
+    for waveform, _, _ in dataset:
+      waveformPSP, waveformSP, waveformSAP, waveformSAT = prepocess_pipeline(waveform)
+      spectogramPSP = spectogram_pipeline(waveformPSP)
+      spectogramSP = spectogram_pipeline(waveformSP)
+      spectogramSAP = spectogram_pipeline(waveformSAP)
+      spectogramSAT = spectogram_pipeline(waveformSAT)
+      torchaudio.save(path_dir+'/' ,waveformPSP)
+
+  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
+
 
 def save_metrics(metrics, path):
   with open(path, "w") as file:
