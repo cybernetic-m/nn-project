@@ -144,32 +144,30 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
   dataset_dir +='_split'
   try:
     if (os.path.exists(dataset_dir)):
+      
+      subdir = 'train'
+      os.makedirs(os.path.join(save_dir, subdir))
 
-      subdirectories = os.listdir(dataset_dir)
+      for filename in os.listdir(os.path.join(dataset_dir, subdir)):
+        file_path = os.path.join(dataset_dir, subdir, filename)
+        save_path = os.path.join(save_dir, subdir, filename)
+        
+          
+        waveform, sample_rate = torchaudio.load(file_path)
+        waveformPSP, waveformSP, waveformSAP, waveformSAT = preprocess_pipeline(waveform, sample_rate)
+        spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
+        spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
+        spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
+        spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
 
-      for subdir in subdirectories:
-        if not(subdir == 'documents'):
-          for filename in os.listdir(os.path.join(dataset_dir, subdir)):
-            file_path = os.path.join(dataset_dir, subdir, filename)
-            save_path = os.path.join(save_dir, subdir, filename)
-            if not (os.path.exists(os.path.join(save_dir, subdir))):
-              os.mkdir(os.path.join(save_dir, subdir))
-              
-            waveform, sample_rate = torchaudio.load(file_path)
-            waveformPSP, waveformSP, waveformSAP, waveformSAT = preprocess_pipeline(waveform, sample_rate)
-            spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
-            spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
-            spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
-            spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
-
-            save_path = save_path[:-4]+'-PSP.wav'
-            torchaudio.save(save_path, waveformPSP)
-            save_path = save_path[:-4]+'-SP.wav'
-            torchaudio.save(save_path, waveformSP)
-            save_path = save_path[:-4]+'-SAP.wav'
-            torchaudio.save(save_path, waveformSAP)
-            save_path = save_path[:-4]+'-SAT.wav'
-            torchaudio.save(save_path, waveformSAT)
+        save_path = save_path[:-4]+'-PSP.wav'
+        torchaudio.save(save_path, waveformPSP)
+        save_path = save_path[:-4]+'-SP.wav'
+        torchaudio.save(save_path, waveformSP)
+        save_path = save_path[:-4]+'-SAP.wav'
+        torchaudio.save(save_path, waveformSAP)
+        save_path = save_path[:-4]+'-SAT.wav'
+        torchaudio.save(save_path, waveformSAT)
 
     else:
       print("Dataset not found")
