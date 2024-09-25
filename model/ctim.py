@@ -93,7 +93,8 @@ class CTIM(nn.Module):
         return self.parent_dir
     
     def load(self, path):
-        self.load_state_dict(torch.load(path))
+        state_dict = torch.load(path, map_location=torch.device('cpu'))
+        self.load_state_dict(state_dict)
         print("loaded:", path)
 
 

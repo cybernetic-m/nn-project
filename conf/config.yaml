@@ -38,8 +38,3 @@ model:
   tab_cont: False
   use_kan: False
   kernel_size: 2
-
-test:
-  url: 'https://drive.google.com/file/d/1JSSasFFTW86z7q_2cHfYZUllQ91B70VJ/view?usp=drive_link'
-  #url: ''
-  #url: ''
