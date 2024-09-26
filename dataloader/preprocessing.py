@@ -40,24 +40,66 @@ def Gain_Adjustment(waveform, gain):
     
     return waveform
 
-def SpecAugmentTime(waveform, sample_rate, time_mask_param = 30 ):
-    spec_transform = transforms.MelSpectrogram(sample_rate=sample_rate)
+def SpecAugmentTime(waveform, sample_rate, time_mask_param=30):
+    n_fft = 512
+    n_mels = 40
+    hop_length = n_fft // 2
+
+    # Create MelSpectrogram
+    spec_transform = transforms.MelSpectrogram(sample_rate=sample_rate, n_fft=n_fft, n_mels=n_mels, hop_length=hop_length)
+
+    # Generate mel spectrogram
     mel_spectrogram = spec_transform(waveform)
+
+    # Apply time masking
     time_mask = transforms.TimeMasking(time_mask_param)
     mel_spectrogram = time_mask(mel_spectrogram)
-    waveform = torchaudio.functional.griffinlim(mel_spectrogram) 
-    waveform = torch.clamp(waveform, -1.0, 1.0)
-    
+
+    # Convert MelSpectrogram back to linear spectrogram
+    inverse_mel_transform = transforms.InverseMelScale(n_stft=n_fft // 2 + 1, n_mels=n_mels)
+    linear_spectrogram = inverse_mel_transform(mel_spectrogram)
+
+    # No padding here; the frequency dimension should already be n_fft // 2 + 1 (257 for n_fft=512)
+
+    # Apply Griffin-Lim
+    window = torch.hann_window(n_fft)
+    waveform = torchaudio.functional.griffinlim(linear_spectrogram, n_fft=n_fft, hop_length=hop_length, win_length=n_fft, window=window,
+                                                power=2.0, n_iter=16, momentum=0.99, length=waveform.size(-1), rand_init=True)
+
+    # In-place clamping to reduce memory allocation
+    waveform.clamp_(-1.0, 1.0)
+
     return waveform
 
-def SpecAugmentFreq(waveform, sample_rate, freq_mask_param = 30):
-    spec_transform = transforms.MelSpectrogram(sample_rate=sample_rate)
+def SpecAugmentFreq(waveform, sample_rate, freq_mask_param=30):
+    n_fft = 512
+    n_mels = 40
+    hop_length = n_fft // 2
+
+    # Create MelSpectrogram
+    spec_transform = transforms.MelSpectrogram(sample_rate=sample_rate, n_fft=n_fft, n_mels=n_mels, hop_length=hop_length)
+
+    # Generate mel spectrogram
     mel_spectrogram = spec_transform(waveform)
+
+    # Apply frequency masking
     freq_mask = transforms.FrequencyMasking(freq_mask_param)
     mel_spectrogram = freq_mask(mel_spectrogram)
-    waveform = torchaudio.functional.griffinlim(mel_spectrogram) 
-    waveform = torch.clamp(waveform, -1.0, 1.0)
-    
+
+    # Convert MelSpectrogram back to linear spectrogram
+    inverse_mel_transform = transforms.InverseMelScale(n_stft=n_fft // 2 + 1, n_mels=n_mels)
+    linear_spectrogram = inverse_mel_transform(mel_spectrogram)
+
+    # No padding here; the frequency dimension should already be n_fft // 2 + 1 (257 for n_fft=512)
+
+    # Apply Griffin-Lim
+    window = torch.hann_window(n_fft)
+    waveform = torchaudio.functional.griffinlim(linear_spectrogram, n_fft=n_fft, hop_length=hop_length, win_length=n_fft, window=window,
+                                                power=2.0, n_iter=16, momentum=0.99, length=waveform.size(-1), rand_init=True)
+
+    # In-place clamping to reduce memory allocation
+    waveform.clamp_(-1.0, 1.0)
+
     return waveform
 
 def Reverberation(waveform):
