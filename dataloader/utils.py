@@ -160,38 +160,36 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
         waveform, sample_rate = torchaudio.load(file_path)
         with torch.no_grad():
           waveformPSP = pitch_and_speed_perturbation(waveform, sample_rate, 1.2, 2)
+          spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
           save_path = save_path[:-4]+'-PSP.wav'
+          save_spectrogram_image(spectogramPSP,save_path[:-4]+'.png')
           torchaudio.save(save_path, waveformPSP, sample_rate)
-          del waveformPSP
+          del waveformPSP, spectogramPSP
           gc.collect()
         with torch.no_grad():
           waveformSP = speed_perturbation(waveform, sample_rate, 1.2)
+          spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
           save_path = save_path[:-4]+'-SP.wav'
+          save_spectrogram_image(spectogramSP,save_path[:-4]+'.png')
           torchaudio.save(save_path, waveformSP, sample_rate)
-          del waveformSP
+          del waveformSP, spectogramSP
           gc.collect()
         with torch.no_grad():
           waveformSAP = SpecAugmentFreq(waveform, sample_rate, 40)
+          spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
           save_path = save_path[:-4]+'-SAP.wav'
+          save_spectrogram_image(spectogramSAP,save_path[:-4]+'.png')
           torchaudio.save(save_path, waveformSAP, sample_rate)
-          del waveformSAP
+          del waveformSAP, spectogramSAP
           gc.collect()
         with torch.no_grad():
           waveformSAT = SpecAugmentTime(waveform, sample_rate, 40)
+          spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
           save_path = save_path[:-4]+'-SAT.wav'
+          save_spectrogram_image(spectogramSAT,save_path[:-4]+'.png')
           torchaudio.save(save_path, waveformSAT, sample_rate)
-          del waveform, waveformSAT, sample_rate
+          del waveform, waveformSAT, spectogramSAT, sample_rate
           gc.collect()
-        #spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
-        #spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
-        #spectogramSP = spectogram_pipeline(waveformSAP, sample_rate)
-        #spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
-
-
-
-
-
-        #del spectogramPSP, spectogramSP, spectogramSP, spectogramSAT
 
     else:
       print("Dataset not found or already augmented")
@@ -200,6 +198,21 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
     print(error)
 
 #  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
+
+# Function to save a tensor as a spectrogram image
+def save_spectrogram_image(spectrogram, filename):
+  # Convert the spectrogram tensor to numpy for plotting
+  spectrogram = spectrogram.cpu().numpy()
+  
+  # Plot the spectrogram using matplotlib
+  plt.figure(figsize=(10, 4))
+  plt.imshow(spectrogram[0], origin='lower', aspect='auto', cmap='viridis')
+  plt.colorbar(format='%+2.0f dB')
+  
+  # Save the image
+  plt.savefig(filename)
+  plt.close()
+
 
 
 def save_metrics(metrics, path):
@@ -278,6 +291,8 @@ def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, va
   ax[1].set_ylabel('Accuracy value')
   ax[0].legend()
 
-# Display the plot
-plt.tight_layout()  # This helps to prevent overlapping of subplots
-plt.show()
+  # Display the plot
+  plt.tight_layout()  # This helps to prevent overlapping of subplots
+  plt.show()
+
+
