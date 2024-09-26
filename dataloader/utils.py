@@ -9,6 +9,9 @@ import seaborn as sns
 import matplotlib as plt
 import numpy as np
 import torchaudio
+import torch
+from dataloader.preprocessing import pitch_and_speed_perturbation, speed_perturbation, SpecAugmentFreq, SpecAugmentTime
+import gc
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -146,7 +149,8 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
     if (os.path.exists(dataset_dir)):
       
       subdir = 'train'
-      os.makedirs(os.path.join(save_dir, subdir))
+      if not(os.path.exists(save_dir)):
+        os.makedirs(os.path.join(save_dir, subdir))
 
       for filename in os.listdir(os.path.join(dataset_dir, subdir)):
         file_path = os.path.join(dataset_dir, subdir, filename)
@@ -154,20 +158,40 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
         
           
         waveform, sample_rate = torchaudio.load(file_path)
-        waveformPSP, waveformSP, waveformSAP, waveformSAT = preprocess_pipeline(waveform, sample_rate)
-        spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
-        spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
-        spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
-        spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
+        with torch.no_grad():
+          waveformPSP = pitch_and_speed_perturbation(waveform, sample_rate, 1.2, 2)
+          save_path = save_path[:-4]+'-PSP.wav'
+          torchaudio.save(save_path, waveformPSP)
+          del waveformPSP
+          gc.collect()
+        with torch.no_grad():
+          waveformSP = speed_perturbation(waveform, sample_rate, 1.2)
+          save_path = save_path[:-4]+'-SP.wav'
+          torchaudio.save(save_path, waveformSP)
+          del waveformSP
+          gc.collect()
+        with torch.no_grad():
+          waveformSAP = SpecAugmentFreq(waveform, sample_rate, 30)
+          save_path = save_path[:-4]+'-SAP.wav'
+          torchaudio.save(save_path, waveformSAP)
+          del waveformSAP
+          gc.collect()
+        with torch.no_grad():
+          waveformSAT = SpecAugmentTime(waveform, sample_rate, 30)
+          save_path = save_path[:-4]+'-SAT.wav'
+          torchaudio.save(save_path, waveformSAT)
+          del waveform, waveformSAT, sample_rate
+          gc.collect()
+        #spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
+        #spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
+        #spectogramSP = spectogram_pipeline(waveformSAP, sample_rate)
+        #spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
 
-        save_path = save_path[:-4]+'-PSP.wav'
-        torchaudio.save(save_path, waveformPSP)
-        save_path = save_path[:-4]+'-SP.wav'
-        torchaudio.save(save_path, waveformSP)
-        save_path = save_path[:-4]+'-SAP.wav'
-        torchaudio.save(save_path, waveformSAP)
-        save_path = save_path[:-4]+'-SAT.wav'
-        torchaudio.save(save_path, waveformSAT)
+
+
+
+
+        #del spectogramPSP, spectogramSP, spectogramSP, spectogramSAT
 
     else:
       print("Dataset not found")
