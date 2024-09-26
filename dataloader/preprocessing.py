@@ -3,10 +3,8 @@ import torchaudio
 import random
 import torchaudio.transforms as transforms
 import torch.nn.functional as F
+import torch.nn as nn
 
-class preprocessing():
-    def __init__(self, dataset) -> None:
-        super.__init__(preprocessing)
 
 def Time_Stretching(waveform, low, high):
     time_stretch_rate = random.uniform(low, high)  # Time stretching factor
@@ -24,13 +22,21 @@ def Pitch_Shifting(waveform, sample_rate, low, high):
     
     return waveform
 
-def Additive_Noise(waveform):
-    noise_factor = 0.005                          # Noise level
-    noise = noise_factor * torch.randn_like(waveform)
-    waveform = waveform + noise
-    waveform = torch.clamp(waveform, -1.0, 1.0)
-    
-    return waveform
+class Additive_Noise(nn.Module):
+
+    def __init__(self, device):
+        super().__init__()
+
+        self.device = device
+
+    def forward(self, waveform):
+        noise = torch.randn_like(waveform)
+        add_noise = torchaudio.transforms.AddNoise()
+        snr_value= 10
+        snr = torch.tensor([snr_value], device=self.device)
+        white_noise_audio = add_noise(waveform, noise, snr)
+        
+        return white_noise_audio
 
 def Gain_Adjustment(waveform, gain):
     gain_db = random.uniform(-gain, gain)  
