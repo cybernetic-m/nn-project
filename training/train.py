@@ -29,7 +29,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
 
         # Calculate the metrics
         print("TRAIN:")
-        calculate_metrics(y_true_list, y_pred_list, training_metrics_dict, loss_avg.tolist(), epoch) 
+        calculate_metrics(y_true_list, y_pred_list, training_metrics_dict, loss_avg, epoch) 
         
         # Validation part (disable the gradient computation)
         # Set the model in validation mode
@@ -48,8 +48,9 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                 vy_pred_tmp = torch.argmax(vy_pred).cpu()
                 vy_pred_list += [vy_pred_tmp]
             vloss_avg = vloss_epoch / i
+            vloss_avg = vloss_epoch.item()
             print("VALIDATION:")
-            calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg.tolist(), epoch)
+            calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg, epoch)
 
         print(f'LOSS train {loss_avg} valid {vloss_avg}')
 

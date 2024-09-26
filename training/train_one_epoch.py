@@ -38,7 +38,7 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         # Add the "batch" predictions and true values to the corrispettive lists
         #print("y_true", y_true.tolist())
         y_true_list += y_true.cpu().tolist()
-        y_pred_tmp = torch.argmax(y_pred).cpu()
+        y_pred_tmp = torch.argmax(y_pred).cpu().item()
         #print("y_pred_tmp", y_pred_tmp)
         y_pred_list += [y_pred_tmp]
         '''
@@ -46,8 +46,8 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         print("torch.argmax(y_pred)", torch.argmax(y_pred))
         '''
     
-    # Average Loss in the epoch
-    loss_avg = loss_epoch / i 
+    loss_avg = loss_epoch / i   # tensor(value, device = 'cuda:0')
+    loss_avg = loss_avg.item() # Take only value
     
     return loss_avg, y_pred_list, y_true_list
 
