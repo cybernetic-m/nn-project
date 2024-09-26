@@ -150,7 +150,7 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
   save_dir = dataset_dir+'_aug'
   dataset_dir +='_split'
   try:
-    if (os.path.exists(dataset_dir)) and not(os.path.exists(save_dir)) :
+    if (os.path.exists(dataset_dir)):# and not(os.path.exists(save_dir)) :
       
       subdir = 'train'
       if not(os.path.exists(save_dir)):
