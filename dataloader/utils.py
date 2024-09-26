@@ -1,4 +1,5 @@
 import os
+import sys
 from tqdm import tqdm
 import zipfile
 import shutil
@@ -10,6 +11,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torchaudio
 import torch
+dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
+# Add these directories to sys.path
+sys.path.append(dataloader_path)
 from dataloader.preprocessing import pitch_and_speed_perturbation, speed_perturbation, SpecAugmentFreq, SpecAugmentTime
 import gc
 
