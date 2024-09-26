@@ -14,7 +14,7 @@ import torch
 dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
 # Add these directories to sys.path
 sys.path.append(dataloader_path)
-from dataloader.preprocessing import pitch_and_speed_perturbation, speed_perturbation, SpecAugmentFreq, SpecAugmentTime
+from preprocessing import pitch_and_speed_perturbation, speed_perturbation, SpecAugmentFreq, SpecAugmentTime
 import gc
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
