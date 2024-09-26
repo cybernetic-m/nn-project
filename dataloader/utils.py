@@ -150,7 +150,7 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
   save_dir = dataset_dir+'_aug'
   dataset_dir +='_split'
   try:
-    if (os.path.exists(dataset_dir)):
+    if (os.path.exists(dataset_dir)) and not(os.path.exists(save_dir)) :
       
       subdir = 'train'
       if not(os.path.exists(save_dir)):
@@ -165,25 +165,25 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
         with torch.no_grad():
           waveformPSP = pitch_and_speed_perturbation(waveform, sample_rate, 1.2, 2)
           save_path = save_path[:-4]+'-PSP.wav'
-          torchaudio.save(save_path, waveformPSP)
+          torchaudio.save(save_path, waveformPSP, sample_rate)
           del waveformPSP
           gc.collect()
         with torch.no_grad():
           waveformSP = speed_perturbation(waveform, sample_rate, 1.2)
           save_path = save_path[:-4]+'-SP.wav'
-          torchaudio.save(save_path, waveformSP)
+          torchaudio.save(save_path, waveformSP, sample_rate)
           del waveformSP
           gc.collect()
         with torch.no_grad():
-          waveformSAP = SpecAugmentFreq(waveform, sample_rate, 30)
+          waveformSAP = SpecAugmentFreq(waveform, sample_rate, 40)
           save_path = save_path[:-4]+'-SAP.wav'
-          torchaudio.save(save_path, waveformSAP)
+          torchaudio.save(save_path, waveformSAP, sample_rate)
           del waveformSAP
           gc.collect()
         with torch.no_grad():
-          waveformSAT = SpecAugmentTime(waveform, sample_rate, 30)
+          waveformSAT = SpecAugmentTime(waveform, sample_rate, 40)
           save_path = save_path[:-4]+'-SAT.wav'
-          torchaudio.save(save_path, waveformSAT)
+          torchaudio.save(save_path, waveformSAT, sample_rate)
           del waveform, waveformSAT, sample_rate
           gc.collect()
         #spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
@@ -198,7 +198,7 @@ def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
         #del spectogramPSP, spectogramSP, spectogramSP, spectogramSAT
 
     else:
-      print("Dataset not found")
+      print("Dataset not found or already augmented")
 
   except Exception as error:
     print(error)

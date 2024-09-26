@@ -86,7 +86,7 @@ class CTIM(nn.Module):
         if self.parent_dir != '':
             shutil.rmtree(self.parent_dir) # remove the precedent model
         self.parent_dir = path + '/' + self.model_name + formatted_datetime 
-        os.mkdir(self.parent_dir)
+        os.makedirs(self.parent_dir)
         name = self.parent_dir + '/model.pt'  # name: your_path/2024-06-25_14:06:10/model.pt
         torch.save(self.state_dict(), name) # save the model in the precedent path
         print("saved:", name)
