@@ -192,14 +192,14 @@ def load_metrics(path):
   else:
     print("The file", path, "does not exists!")
     
-def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch):
+def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch, test=False):
 
   current_acc = metrics.accuracy_score(y_true, y_pred)
   current_prec = metrics.precision_score(y_true, y_pred, average='micro')
   current_recall = metrics.recall_score(y_true, y_pred, average='micro')
   current_f1_score = metrics.f1_score(y_true, y_pred, average='micro')
-
-  metrics_dict["epoch"].append(epoch)
+  if test == False:
+    metrics_dict["epoch"].append(epoch)
   metrics_dict["loss"].append(loss)
   metrics_dict["accuracy"].append(current_acc)
   metrics_dict["precision"].append(current_prec)
