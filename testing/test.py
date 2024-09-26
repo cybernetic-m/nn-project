@@ -1,6 +1,7 @@
 import os
 import sys
 import torch
+import sklearn.metrics
 
 # Get the absolute paths of the directories containing the utils functions and testing directory
 utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils'))
@@ -53,12 +54,16 @@ def test(model, model_path, test_dataloader, test_metrics_dict, loss_fn):
     loss_avg = loss_avg.item() # Take only value
 
     calculate_metrics(y_true_list, y_pred_list, test_metrics_dict, loss_avg, i, test=True)
+   
+    cm = sklearn.metrics.confusion_matrix(y_true=y_true_list, y_pred=y_pred_list, labels=[0,1,2,3,4,5,6])
     
     results_path = testing_path
 
     name_test_metrics = f'/{model.model_name}_test_metrics.json'
    
     save_metrics(test_metrics_dict, results_path + name_test_metrics)
+
+    return cm
 
 
 

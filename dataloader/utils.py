@@ -6,7 +6,7 @@ import random
 import json
 from sklearn import metrics
 import seaborn as sns
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import numpy as np
 import torchaudio
 import torch
@@ -238,7 +238,7 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
-    plt.figure(figsize=(10, 7))
+    plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='.2f' if normalize else 'd', cmap=cmap,
                 xticklabels=class_names, yticklabels=class_names)
 
@@ -246,3 +246,38 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
     plt.show()
+
+
+def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, validation_accuracy):
+
+  # Is it necessary to use numpy?
+  '''
+  epochs = np.linspace(0, len(epochs), 1)
+  
+  training_loss = np.array(training_loss)
+  validation_loss = np.array(validation_loss)
+  training_accuracy = np.array(training_accuracy)
+  validation_accuracy = np.array(validation_accuracy)
+  '''
+
+  fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
+
+  # Set the functions, title, x_label, y_label and legend for the loss 
+  ax[0].plot(epochs, training_loss, label='Training Loss', color='b')
+  ax[0].plot(epochs, validation_loss, label='Validation Loss', color='r')
+  ax[0].set_title('Loss')
+  ax[0].set_xlabel('Epochs')
+  ax[0].set_ylabel('Loss value')
+  ax[0].legend()
+
+  # Set the functions, title, x_label, y_label and legend for the accuracy
+  ax[1].plot(epochs, training_accuracy, label='Training Accuracy', color='b')
+  ax[1].plot(epochs, validation_accuracy, label='Validation Accuracy', color='r')
+  ax[1].set_title('Accuracy')
+  ax[1].set_xlabel('Epochs')
+  ax[1].set_ylabel('Accuracy value')
+  ax[0].legend()
+
+# Display the plot
+plt.tight_layout()  # This helps to prevent overlapping of subplots
+plt.show()
