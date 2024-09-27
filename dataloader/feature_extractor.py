@@ -15,11 +15,11 @@ class feature_extractor():
             waveform, sample_rate = data
             waveform = waveform.cpu()
 
-            mel_spectrogram = self.mel_spect(waveform, sample_rate)
+            mel_spectrogram = self.mel_spect(waveform, sample_rate, 128)
             chroma = self.chroma(waveform)
             zcr = self.ZCR(waveform)
             rms = self.RMS(waveform)
-            mfcc = self.mfcc(waveform, sample_rate)
+            mfcc = self.mfcc(waveform, sample_rate, 39)
             # Average features across channels
             mel_spectrogram_mean = mel_spectrogram.mean(dim=0).mean(dim=1)  # Average across channels
             chroma_mean = chroma.mean(dim=1)  # Average across channels
@@ -38,12 +38,12 @@ class feature_extractor():
             self.features.append(combined_features)
         
 
-    def mfcc(self, waveform, sample_rate):
+    def mfcc(self, waveform, sample_rate, n_mfcc):
         n_fft = 2048
         win_length = min(n_fft, self.frame_length)
         mfcc_transform = T.MFCC(
             sample_rate=sample_rate,
-            n_mfcc=39,
+            n_mfcc=n_mfcc,
             melkwargs={
                 "n_fft": n_fft,
                 "n_mels": 128,
@@ -55,7 +55,7 @@ class feature_extractor():
         mfcc = mfcc_transform(waveform)
         return mfcc
     
-    def mel_spect(self, waveform, sample_rate):
+    def mel_spect(self, waveform, sample_rate, n_mels):
         n_fft = 2048
         win_length = min(n_fft, self.frame_length)
         mel_spectrogram_transform = T.MelSpectrogram(
@@ -63,7 +63,7 @@ class feature_extractor():
         n_fft=n_fft,
         win_length=win_length,
         hop_length=self.frame_shift,
-        n_mels=128
+        n_mels=n_mels
         )
         mel_spectrogram = mel_spectrogram_transform(waveform)
         return mel_spectrogram
