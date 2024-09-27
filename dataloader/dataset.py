@@ -2,13 +2,13 @@ from torch.utils.data import Dataset
 import os
 import torchaudio
 import torch
+from feature_extractor import feature_extractor
 
 class EMOVO_Dataset(Dataset):
 
-  def __init__(self, dataset_dir, transform=None, device = 'cpu'):
+  def __init__(self, dataset_dir, feature_extract=False, device = 'cpu'):
 
     self.dataset_dir = dataset_dir
-    self.transform = transform
     self.classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
     self.data = [] # Waw Audio as tensors
     self.labels = [] # Labels of the data
@@ -25,6 +25,11 @@ class EMOVO_Dataset(Dataset):
       self.data.append((tensor,sample_rate))
       self.labels.append(torch.tensor(class_))
     self.device = device
+
+    if feature_extract:
+      feature_extracto = feature_extractor(self)
+      feature_extracto.apply()
+      self.data = feature_extracto.get_features()
 
   def __len__(self):
     return len(self.data)

@@ -37,6 +37,8 @@ class feature_extractor():
             ], dim=0)
             self.features.append(combined_features)
         
+    def get_features(self):
+        return self.features
 
     def mfcc(self, waveform, sample_rate, n_mfcc):
         n_fft = 2048
