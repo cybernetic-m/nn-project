@@ -94,7 +94,7 @@ class TempAw_Block(nn.Module):
 
         x3 = F.sigmoid(x3)
 
-        if x.shape[2] != x3.shape[2]:
+        if x.shape[-1] != x3.shape[-1]:
             x = self.conv_input(x)
             
         #print("x", x.shape)

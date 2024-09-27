@@ -74,7 +74,7 @@ class CKConv(nn.Module):
         #print("rel_pos:", rel_pos)
         #print("rel_pos shape:", rel_pos.shape)
         #print("x_shape", x.shape)
-        conv_kernel = self.kernel_gen(rel_pos).view(self.output_channels, self.input_channels, x.shape[2]) # [1, 4, 100] -> [2, 2, 100] [out_ch, in_ch, kern_size]
+        conv_kernel = self.kernel_gen(rel_pos).view(self.output_channels, self.input_channels, x.shape[-1]) # [1, 4, 100] -> [2, 2, 100] [out_ch, in_ch, kern_size]
         #print("conv_kernel:", conv_kernel)
         #print("conv_kernel shape:", conv_kernel.shape)
         x, conv_kernel = self.causal_padding(x, conv_kernel)
@@ -124,7 +124,7 @@ class CKConv(nn.Module):
         max_rel_pos, self.sr_change = self.calculate_max(self.previous_length.item(), x.shape[-1])
     
         rel_positions = (
-                torch.linspace(-1.0, max_rel_pos, x.shape[2])
+                torch.linspace(-1.0, max_rel_pos, x.shape[-1])
                 .unsqueeze(0)
                 .unsqueeze(0)
                 .to(self.device)
