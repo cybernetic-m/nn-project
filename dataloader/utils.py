@@ -299,4 +299,24 @@ def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, va
   plt.tight_layout()  # This helps to prevent overlapping of subplots
   plt.show()
 
-
+def smooth_label(target: int, num_classes: int, smoothing: float = 0.1):
+    """
+    Converts a single label to a smoothed label distribution.
+    
+    Args:
+        target (int): The correct class label (index).
+        num_classes (int): Total number of classes.
+        smoothing (float): Smoothing factor (ε). Default is 0.1.
+    
+    Returns:
+        torch.Tensor: A tensor of size (num_classes,) with the smoothed label distribution.
+    """
+    assert 0 <= target < num_classes, "Target label must be between 0 and num_classes - 1"
+    
+    # Initialize all labels with smoothing/(num_classes - 1)
+    smoothed_labels = torch.full((num_classes,), smoothing / (num_classes - 1))
+    
+    # Set the correct class to 1 - smoothing
+    smoothed_labels[target] = 1.0 - smoothing
+    
+    return smoothed_labels
