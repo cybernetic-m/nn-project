@@ -17,23 +17,35 @@ from preprocessing import invert_audio
 
 class CTIM_network(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, output_len, cont=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, cont=False, device='cpu'):
         
         super(CTIM_network,self).__init__()
+        if cont:
+            self.conv_forward = CKConv(
+                input_channels=in_channels,
+                output_channels=n_filter,
+                device=device
+            )
 
-        self.conv_forward = CKConv(
-            input_channels=in_channels,
-            output_channels=n_filter,
-            output_len=output_len,
-            device=device
-        )
+            self.conv_reverse = CKConv(
+                input_channels=in_channels,
+                output_channels=n_filter,
+                device=device
+            )
+        else:
+            self.conv_forward = nn.Conv1d(
+                in_channels=in_channels,
+                out_channels=n_filter,
+                kernel_size=1,
+                device=device
+            )
 
-        self.conv_reverse = CKConv(
-            input_channels=in_channels,
-            output_channels=n_filter,
-            output_len=output_len,
-            device=device
-        )
+            self.conv_reverse = nn.Conv1d(
+                in_channels=in_channels,
+                out_channels=n_filter,
+                kernel_size=1,
+                device=device
+            )            
 
         self.TempAw_Blocks_forward = nn.ModuleList()
         self.TempAw_Blocks_reverse = nn.ModuleList()
@@ -46,6 +58,7 @@ class CTIM_network(nn.Module):
                 dilation_rate=dilation_rate,
                 dropout_rate=dropout_rate,
                 cont = cont,
+                num_features = num_features,
                 device=device
             )
             TempAw_Block_n_reverse = TempAw_Block(
@@ -54,6 +67,7 @@ class CTIM_network(nn.Module):
                 dilation_rate= dilation_rate,
                 dropout_rate= dropout_rate,
                 cont = cont,
+                num_features = num_features,
                 device=device
             )
             self.TempAw_Blocks_forward.append(TempAw_Block_n_forward)

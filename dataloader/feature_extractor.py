@@ -1,5 +1,4 @@
 import torch
-import torchaudio
 import torchaudio.transforms as T
 
 class feature_extractor():
@@ -19,7 +18,7 @@ class feature_extractor():
             chroma = self.chroma(waveform)
             zcr = self.ZCR(waveform)
             rms = self.RMS(waveform)
-            mfcc = self.mfcc(waveform, sample_rate, 39)
+            mfcc = self.mfcc(waveform, sample_rate, 40)
             # Average features across channels
             mel_spectrogram_mean = mel_spectrogram.mean(dim=0).mean(dim=1)  # Average across channels
             chroma_mean = chroma.mean(dim=1)  # Average across channels

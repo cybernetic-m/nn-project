@@ -5,7 +5,7 @@ from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, cont=False, dropout_rate=0, device='cpu'):
+    def __init__(self, dilation_rate, n_filter, kernel_size, num_features, cont=False, dropout_rate=0, device='cpu'):
 
         super(TempAw_Block,self).__init__()
         
@@ -44,12 +44,12 @@ class TempAw_Block(nn.Module):
             )
 
         self.batch_norm1 = nn.BatchNorm1d(
-            num_features=n_filter, 
+            num_features=num_features, 
             device=device
         )
 
         self.batch_norm2 = nn.BatchNorm1d(
-            num_features=n_filter,
+            num_features=num_features,
             device=device
         )
         
@@ -82,6 +82,7 @@ class TempAw_Block(nn.Module):
         #print("Padding Causal1", x2)
 
         x2 = self.conv1(x1)
+        #print(x2.shape)
         x2 = self.batch_norm1(x2)
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
