@@ -7,7 +7,7 @@ from utils import smooth_label
 
 class EMOVO_Dataset(Dataset):
 
-  def __init__(self, dataset_dir, feature_extract=False, label_smoothing=0.05, device = 'cpu'):
+  def __init__(self, dataset_dir, label_smoothing, feature_extract=False, device = 'cpu'):
 
     self.dataset_dir = dataset_dir
     self.classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
