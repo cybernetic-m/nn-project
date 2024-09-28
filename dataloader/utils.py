@@ -313,10 +313,13 @@ def smooth_label(target: int, num_classes: int, smoothing: float = 0.1):
     """
     assert 0 <= target < num_classes, "Target label must be between 0 and num_classes - 1"
     
-    # Initialize all labels with smoothing/(num_classes - 1)
-    smoothed_labels = torch.full((num_classes,), smoothing / (num_classes - 1))
-    
-    # Set the correct class to 1 - smoothing
-    smoothed_labels[target] = 1.0 - smoothing
+    if smoothing > 0.0:
+        # Label smoothing logic
+        smoothed_labels = torch.full((num_classes,), smoothing / (num_classes - 1))
+        smoothed_labels[target] = 1.0 - smoothing
+    else:
+        # One-hot encoding logic (no smoothing)
+        smoothed_labels = torch.zeros(num_classes)
+        smoothed_labels[target] = 1.0
     
     return smoothed_labels
