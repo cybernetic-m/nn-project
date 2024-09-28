@@ -3,10 +3,11 @@ import os
 import torchaudio
 import torch
 from feature_extractor import feature_extractor
+from utils import smooth_label
 
 class EMOVO_Dataset(Dataset):
 
-  def __init__(self, dataset_dir, feature_extract=False, device = 'cpu'):
+  def __init__(self, dataset_dir, feature_extract=False, label_smoothing=0.05, device = 'cpu'):
 
     self.dataset_dir = dataset_dir
     self.classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
@@ -32,6 +33,9 @@ class EMOVO_Dataset(Dataset):
       feature = feature_extracto.get_features()
       for i in range(len(self.data)):
         self.data[i] = (feature[i], self.data[i][1])
+    if label_smoothing:
+      for i in range(len(self.data)):
+        self.data[i] = (self.data[i][0], smooth_label(self.data[i][1], len(self.classes)))      
 
   def __len__(self):
     return len(self.data)
