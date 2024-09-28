@@ -34,8 +34,8 @@ class EMOVO_Dataset(Dataset):
       for i in range(len(self.data)):
         self.data[i] = (feature[i], self.data[i][1])
     if label_smoothing:
-      for i in range(len(self.data)):
-        self.data[i] = (self.data[i][0], smooth_label(self.data[i][1], len(self.classes)))      
+      for i in range(len(self.labels)):
+        self.labels[i] = smooth_label(self.labels[i], len(self.classes))   
 
   def __len__(self):
     return len(self.data)
