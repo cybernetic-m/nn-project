@@ -46,7 +46,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                 vloss_epoch += vloss
                 vy_true_tmp = torch.argmax(vy_true).cpu().item()
                 vy_true_list += [vy_true_tmp]
-                vy_pred_tmp = torch.argmax(vy_pred).cpu()
+                vy_pred_tmp = torch.argmax(vy_pred).cpu().item()
                 vy_pred_list += [vy_pred_tmp]
             vloss_avg = vloss_epoch / i
             vloss_avg = vloss_epoch.item()
