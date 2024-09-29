@@ -73,11 +73,13 @@ class feature_extractor():
         # Compute the short-time Fourier transform (STFT)
         n_fft = 2048
         win_length = min(n_fft, self.frame_length)
+        window = torch.hamming_window(win_length, device=waveform.device)
         stft = torch.stft(
         waveform,
         n_fft=n_fft,
         hop_length=self.frame_shift,
         win_length=win_length,
+        window=window,
         return_complex=True
         )
 
