@@ -40,5 +40,6 @@ model:
   n_filter: 64
   num_features: 182 
   tab_cont: False
+  cont: False
   use_kan: False
   kernel_size: 2

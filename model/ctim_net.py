@@ -17,7 +17,7 @@ from preprocessing import invert_audio
 
 class CTIM_network(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, cont=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, cont=False, tab_cont=False, device='cpu'):
         
         super(CTIM_network,self).__init__()
         if cont:
@@ -57,7 +57,7 @@ class CTIM_network(nn.Module):
                 kernel_size=kernel_size,
                 dilation_rate=dilation_rate,
                 dropout_rate=dropout_rate,
-                cont = cont,
+                cont = tab_cont,
                 num_features = num_features,
                 device=device
             )
@@ -66,7 +66,7 @@ class CTIM_network(nn.Module):
                 kernel_size=kernel_size,
                 dilation_rate= dilation_rate,
                 dropout_rate= dropout_rate,
-                cont = cont,
+                cont = tab_cont,
                 num_features = num_features,
                 device=device
             )
