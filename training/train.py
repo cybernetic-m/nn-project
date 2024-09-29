@@ -45,6 +45,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                 #print("vy_pred",vy_pred)
                 #print("vy_true",vy_true)                
                 vloss = loss_fn(vy_pred, vy_true)
+                #print("vloss",vloss)
                 vloss_epoch += vloss
                 vy_true_list += vy_true.tolist()
                 vy_pred_tmp = vy_pred.cpu().tolist()
@@ -53,9 +54,10 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                     #print("y_pred_l",type(y_pred_l))
                     vy_pred_li += [vy_pred_l.index(max(vy_pred_l))]
                 #print("y_pred_li", y_pred_li)
-                vy_pred_list += vy_pred_li  
+                vy_pred_list += vy_pred_li
+            #print("vloss_epoch", vloss_epoch)  
             vloss_avg = vloss_epoch / i
-            vloss_avg = vloss_epoch.item()
+            vloss_avg = vloss_avg.item()
             print("VALIDATION:")
             calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg, epoch)
 
