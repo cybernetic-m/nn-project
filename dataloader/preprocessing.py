@@ -42,18 +42,8 @@ class Preprocessing(nn.Module):
                 shift_amount = abs(shift_amount)
                 shifted_waveform = torch.cat((waveform[:, shift_amount:], zeros_tensor), dim=1)
             return shifted_waveform, type_of_prep
-
-        # Do the pitch randomically taking a random number of semitones "n_steps"
+        
         elif type_of_prep == 2:
-            delay_time = random.choice([0.6, 1, 2])
-            decay_factor = random.choice([0.4, 0.7, 0.9])
-            delay_samples = int(delay_time * sample_rate)
-            waveformcpu = waveform.cpu()
-            delayed_waveform = np.zeros_like(waveformcpu)
-            delayed_waveform[delay_samples:] = waveformcpu[:-delay_samples]
-            waveform_with_echo = waveformcpu + delayed_waveform * decay_factor
-            return waveform_with_echo.to(self.device), type_of_prep
-        elif type_of_prep == 3:
             speed_factor = random.choice([0.25, 0.5, 1.5, 2])
             waveformcpu = waveform.cpu()
             waveformnumpy = waveformcpu.numpy()

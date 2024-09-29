@@ -148,7 +148,7 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
 def augment_data(dataset_src, extract_dir, transforms, device):
   process = psutil.Process(os.getpid())
   try:
-    type_of_prep_list = ['white_noise', 'shifted', 'echo', 'pitch_speed'] 
+    type_of_prep_list = ['white_noise', 'shifted', 'pitch_speed'] 
     new_dataset_dir = os.path.join(extract_dir, 'EMOVO_aug')
     # Copy the entire directory to the new destination
     if not (os.path.exists(new_dataset_dir)):
