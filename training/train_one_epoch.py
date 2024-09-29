@@ -26,8 +26,8 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
 
         # Compute the loss and the gradient
         #y_pred = torch.argmax(y_pred, dim)
-        print("y_pred", y_pred)
-        print("y_true", y_true)
+        #print("y_pred", y_pred)
+        #print("y_true", y_true)
         loss_value = loss_fn(y_pred, y_true)
         loss_value.backward()
 
