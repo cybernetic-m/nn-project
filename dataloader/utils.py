@@ -163,7 +163,7 @@ def augment_data(dataset_src, extract_dir, transforms, device):
         if memory_usage > 1024*20:
           os.kill(os.getpid(), 9)
         waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
-        transformed_wave, type_of_prep = transforms(waveform.to(device), sample_rate)
+        transformed_wave, type_of_prep = transforms(waveform.to(device))
         name_augmentation = type_of_prep_list[type_of_prep]
         new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
         torchaudio.save(new_name, transformed_wave.cpu(), sample_rate)
