@@ -36,7 +36,7 @@ class CTIM(nn.Module):
             self.classifier = ...
         else:
             self.classifier = nn.Linear(
-                in_features = n_filter,
+                in_features = num_features,
                 out_features = num_classes,
                 bias = True,
                 device=device
@@ -61,7 +61,8 @@ class CTIM(nn.Module):
     def forward(self, x):
         x1 = self.ctim_net(x)
         x1 = self.classifier(x1)
-        out = F.softmax(x1, dim=1)
+        print(x1.shape)
+        out = F.softmax(x1, dim=-1)
 
         return out
     

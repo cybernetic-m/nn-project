@@ -44,12 +44,12 @@ class TempAw_Block(nn.Module):
             )
 
         self.batch_norm1 = nn.BatchNorm1d(
-            num_features=num_features, 
+            num_features=n_filter, 
             device=device
         )
 
         self.batch_norm2 = nn.BatchNorm1d(
-            num_features=num_features,
+            num_features=n_filter,
             device=device
         )
         
