@@ -29,13 +29,16 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         #print("y_pred", y_pred)
         #print("y_true", y_true)
         loss_value = loss_fn(y_pred, y_true)
+
         loss_value.backward()
 
         # Update the weights
         optimizer.step()
 
+        loss_report = loss_value.detach()
+        #print("loss_report", loss_report)
         # Summing the values of the loss in each batch of the epoch
-        loss_epoch += loss_value
+        loss_epoch += loss_report
 
         # Add the "batch" predictions and true values to the corrispettive lists
         #print("y_true", y_true.tolist())
@@ -44,7 +47,7 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         y_true_list += y_true.tolist()
 
         #print("y_pred", y_pred.cpu().tolist())
-        y_pred_tmp = y_pred.cpu().tolist()
+        y_pred_tmp = y_pred.detach().cpu().tolist()
         y_pred_li = []
         for y_pred_l in y_pred_tmp:
             #print("y_pred_l",type(y_pred_l))
