@@ -43,10 +43,17 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         #print("y_true_tmp", y_true_tmp)
         y_true_list += y_true.tolist()
 
-        #y_pred_tmp = torch.argmax(y_pred).cpu().item()
-        #print("y_pred_tmp", y_pred_tmp)
-        y_pred_list += y_true.tolist()
+        #print("y_pred", y_pred.cpu().tolist())
+        y_pred_tmp = y_pred.cpu().tolist()
+        y_pred_li = []
+        for y_pred_l in y_pred_tmp:
+            #print("y_pred_l",type(y_pred_l))
+            y_pred_li += [y_pred_l.index(max(y_pred_l))]
+        #print("y_pred_li", y_pred_li)
+        y_pred_list += y_pred_li
         '''
+        print("y_true_list", y_true_list)
+        print("y_pred_list", y_pred_list)
         print("y_pred", y_pred)
         print("torch.argmax(y_pred)", torch.argmax(y_pred))
         '''
