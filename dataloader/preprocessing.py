@@ -12,9 +12,9 @@ class Preprocessing(nn.Module):
 
         self.device = device
 
-    def forward(self, waveform, sample_rate):
+    def forward(self, waveform):
 
-        type_of_prep = random.choice([0, 1, 2, 3])
+        type_of_prep = random.choice([0, 1, 2])
         
         if type_of_prep == 0:
             noise = torch.randn_like(waveform)
