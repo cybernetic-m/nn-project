@@ -42,12 +42,14 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                 vx, vy_true = vdata
                 vx = vx[0]
                 vy_pred = model(vx)
+                #print("vy_pred",vy_pred)
+                #print("vy_true",vy_true)                
                 vloss = loss_fn(vy_pred, vy_true)
                 vloss_epoch += vloss
                 vy_true_tmp = torch.argmax(vy_true).cpu().item()
                 vy_true_list += [vy_true_tmp]
                 vy_pred_tmp = torch.argmax(vy_pred).cpu().item()
-                vy_pred_list += [vy_pred_tmp]
+                vy_pred_list += [vy_pred_tmp]   
             vloss_avg = vloss_epoch / i
             vloss_avg = vloss_epoch.item()
             print("VALIDATION:")
