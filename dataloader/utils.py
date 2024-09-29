@@ -148,7 +148,7 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
 def augment_data(dataset_src, extract_dir, transforms, device):
   process = psutil.Process(os.getpid())
   try:
-    type_of_prep_list = ['white_noise', 'shifted', 'pitched'] 
+    type_of_prep_list = ['white_noise', 'shifted', 'echo', 'pitch_speed'] 
     new_dataset_dir = os.path.join(extract_dir, 'EMOVO_aug')
     # Copy the entire directory to the new destination
     if not (os.path.exists(new_dataset_dir)):
@@ -160,7 +160,7 @@ def augment_data(dataset_src, extract_dir, transforms, device):
 
       for filename in list_file:
         memory_usage = process.memory_info().rss / (1024 ** 2)  # rss gives memory in bytes
-        if memory_usage > 1024*7:
+        if memory_usage > 1024*20:
           os.kill(os.getpid(), 9)
         waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
         transformed_wave, type_of_prep = transforms(waveform.to(device), sample_rate)

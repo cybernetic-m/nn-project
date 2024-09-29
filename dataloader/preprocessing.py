@@ -1,10 +1,9 @@
 import torch
-import torchaudio
 import random
 import torchaudio.transforms as transforms
-import torchaudio.functional as F
 import torch.nn as nn
-
+import numpy as np
+import librosa
 
 class Preprocessing(nn.Module):
 
@@ -15,11 +14,11 @@ class Preprocessing(nn.Module):
 
     def forward(self, waveform, sample_rate):
 
-        type_of_prep = random.choice([0, 1])
+        type_of_prep = random.choice([0, 1, 2, 3])
         
         if type_of_prep == 0:
             noise = torch.randn_like(waveform)
-            add_noise = torchaudio.transforms.AddNoise()
+            add_noise = transforms.AddNoise()
             snr_value= 10
             snr = torch.tensor([snr_value], device=self.device)
             white_noise_audio = add_noise(waveform, noise, snr)
@@ -46,9 +45,21 @@ class Preprocessing(nn.Module):
 
         # Do the pitch randomically taking a random number of semitones "n_steps"
         elif type_of_prep == 2:
-            n_steps = random.choice([-4, -3, -2, -1, 1, 2, 3, 4]) # Number of semitones to increase (positive) or decrease (negative) the pitch
-            waveform_transformed = F.pitch_shift(waveform.cpu(), sample_rate, n_steps) 
-            return waveform_transformed, type_of_prep
+            delay_time = random.choice([0.6, 1, 2])
+            decay_factor = random.choice([0.4, 0.7, 0.9])
+            delay_samples = int(delay_time * sample_rate)
+            waveformcpu = waveform.cpu()
+            delayed_waveform = np.zeros_like(waveformcpu)
+            delayed_waveform[delay_samples:] = waveformcpu[:-delay_samples]
+            waveform_with_echo = waveformcpu + delayed_waveform * decay_factor
+            return waveform_with_echo.to(self.device), type_of_prep
+        elif type_of_prep == 3:
+            speed_factor = random.choice([0.25, 0.5, 1.5, 2])
+            waveformcpu = waveform.cpu()
+            waveformnumpy = waveformcpu.numpy()
+            waveform_pitched = librosa.effects.time_stretch(waveformnumpy, rate=speed_factor)
+            return torch.tensor(waveform_pitched, device=self.device), type_of_prep
+
 
 def invert_audio(waveform):
     return waveform.flip(dims=[1])
