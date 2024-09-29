@@ -38,6 +38,7 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         # Add the "batch" predictions and true values to the corrispettive lists
         #print("y_true", y_true.tolist())
         y_true_tmp = torch.argmax(y_true).cpu().item()
+        #print("y_true_tmp", y_true_tmp)
         y_true_list += [y_true_tmp]
 
         y_pred_tmp = torch.argmax(y_pred).cpu().item()
