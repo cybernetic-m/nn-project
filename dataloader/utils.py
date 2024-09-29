@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torchaudio
 import torch
+import psutil
 dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
 # Add these directories to sys.path
 sys.path.append(dataloader_path)
@@ -145,7 +146,7 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
     print(error)
 
 def augment_data(dataset_src, extract_dir, transforms, device):
-
+  process = psutil.Process(os.getpid())
   try:
     type_of_prep_list = ['white_noise', 'shifted', 'pitched'] 
     new_dataset_dir = os.path.join(extract_dir, 'EMOVO_aug')
@@ -154,15 +155,18 @@ def augment_data(dataset_src, extract_dir, transforms, device):
       print("Copying...")
       shutil.copytree(dataset_src, new_dataset_dir)
 
-    new_dataset_dir_train = os.path.join(new_dataset_dir, 'train')
-    list_file = os.listdir(new_dataset_dir_train)
+      new_dataset_dir_train = os.path.join(new_dataset_dir, 'train')
+      list_file = os.listdir(new_dataset_dir_train)
 
-    for filename in list_file:
-      waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
-      transformed_wave, type_of_prep = transforms(waveform.to(device), sample_rate)
-      name_augmentation = type_of_prep_list[type_of_prep]
-      new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
-      torchaudio.save(new_name, transformed_wave.cpu(), sample_rate)
+      for filename in list_file:
+        memory_usage = process.memory_info().rss / (1024 ** 2)  # rss gives memory in bytes
+        if memory_usage > 1024*7:
+          os.kill(os.getpid(), 9)
+        waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
+        transformed_wave, type_of_prep = transforms(waveform.to(device), sample_rate)
+        name_augmentation = type_of_prep_list[type_of_prep]
+        new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
+        torchaudio.save(new_name, transformed_wave.cpu(), sample_rate)
 
     else:
       print("The augmented dataset already exist!")
