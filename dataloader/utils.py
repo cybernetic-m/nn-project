@@ -14,8 +14,6 @@ import torch
 dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
 # Add these directories to sys.path
 sys.path.append(dataloader_path)
-from preprocessing import pitch_and_speed_perturbation, speed_perturbation, SpecAugmentFreq, SpecAugmentTime
-import gc
 
 def download_dataset (link_dataset, destination_dir, gdrive_link, extract_dir):
   file_id = os.path.split(link_dataset)[0].split('/')[-1]  # Take the file_id (Ex. "https://drive.google.com/file/d/1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT/view?usp=sharing" => file_id: 1BMj4BGXxIMzsd-GYSAEMpB7CF0XB87UT)
@@ -146,62 +144,33 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
     print ("Error in dataset reordering:")
     print(error)
 
-def augment_data(preprocess_pipeline, spectogram_pipeline, dataset_dir):
-  save_dir = dataset_dir+'_aug'
-  dataset_dir +='_split'
-  try:
-    if (os.path.exists(dataset_dir)):# and not(os.path.exists(save_dir)) :
-      
-      subdir = 'train'
-      if not(os.path.exists(save_dir)):
-        os.makedirs(os.path.join(save_dir, subdir))
+def augment_data(dataset_src, extract_dir, transforms, device):
 
-      for filename in os.listdir(os.path.join(dataset_dir, subdir)):
-        file_path = os.path.join(dataset_dir, subdir, filename)
-        save_path = os.path.join(save_dir, subdir, filename)
-        
-          
-        waveform, sample_rate = torchaudio.load(file_path)
-        with torch.no_grad():
-          waveformPSP = pitch_and_speed_perturbation(waveform, sample_rate, 1.2, 2)
-          spectogramPSP = spectogram_pipeline(waveformPSP, sample_rate)
-          save_path = save_path[:-4]+'-PSP.wav'
-          save_spectrogram_image(spectogramPSP,save_path[:-4]+'.png')
-          torchaudio.save(save_path, waveformPSP, sample_rate)
-          del waveformPSP, spectogramPSP
-          gc.collect()
-        with torch.no_grad():
-          waveformSP = speed_perturbation(waveform, sample_rate, 1.2)
-          spectogramSP = spectogram_pipeline(waveformSP, sample_rate)
-          save_path = save_path[:-4]+'-SP.wav'
-          save_spectrogram_image(spectogramSP,save_path[:-4]+'.png')
-          torchaudio.save(save_path, waveformSP, sample_rate)
-          del waveformSP, spectogramSP
-          gc.collect()
-        with torch.no_grad():
-          waveformSAP = SpecAugmentFreq(waveform, sample_rate, 40)
-          spectogramSAP = spectogram_pipeline(waveformSAP, sample_rate)
-          save_path = save_path[:-4]+'-SAP.wav'
-          save_spectrogram_image(spectogramSAP,save_path[:-4]+'.png')
-          torchaudio.save(save_path, waveformSAP, sample_rate)
-          del waveformSAP, spectogramSAP
-          gc.collect()
-        with torch.no_grad():
-          waveformSAT = SpecAugmentTime(waveform, sample_rate, 40)
-          spectogramSAT = spectogram_pipeline(waveformSAT, sample_rate)
-          save_path = save_path[:-4]+'-SAT.wav'
-          save_spectrogram_image(spectogramSAT,save_path[:-4]+'.png')
-          torchaudio.save(save_path, waveformSAT, sample_rate)
-          del waveform, waveformSAT, spectogramSAT, sample_rate
-          gc.collect()
+  try:
+    type_of_prep_list = ['white_noise', 'shifted', 'pitched'] 
+    new_dataset_dir = os.path.join(extract_dir, 'EMOVO_aug')
+    # Copy the entire directory to the new destination
+    if not (os.path.exists(new_dataset_dir)):
+      print("Copying...")
+      shutil.copytree(dataset_src, new_dataset_dir)
+
+    new_dataset_dir_train = os.path.join(new_dataset_dir, 'train')
+    list_file = os.listdir(new_dataset_dir_train)
+
+    for filename in list_file:
+      waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
+      transformed_wave, type_of_prep = transforms(waveform.to(device), sample_rate)
+      name_augmentation = type_of_prep_list[type_of_prep]
+      new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
+      torchaudio.save(new_name, transformed_wave.cpu(), sample_rate)
 
     else:
-      print("Dataset not found or already augmented")
+      print("The augmented dataset already exist!")
 
   except Exception as error:
+    print ("Error in augmentation:")
     print(error)
-
-#  return spectogramPSP, spectogramSP, spectogramSAP, spectogramSAT
+  
 
 # Function to save a tensor as a spectrogram image
 def save_spectrogram_image(spectrogram, filename):
@@ -216,8 +185,6 @@ def save_spectrogram_image(spectrogram, filename):
   # Save the image
   plt.savefig(filename)
   plt.close()
-
-
 
 def save_metrics(metrics, path):
   with open(path, "w") as file:
