@@ -14,7 +14,7 @@ sys.path.append(training_path)
 from utils import calculate_metrics, save_metrics, save_hydra_config
 from train_one_epoch import train_one_epoch
 
-def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_loader, validation_loader, model, loss_fn, optimizer, cfg):
+def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_loader, validation_loader, model, loss_fn, optimizer, plateau_scheduler, cfg):
     
     best_vloss = 10000000000
 
@@ -58,6 +58,9 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
             #print("vloss_epoch", vloss_epoch)  
             vloss_avg = vloss_epoch / i
             vloss_avg = vloss_avg.item()
+
+            plateau_scheduler.step(vloss_avg)
+
             print("VALIDATION:")
             calculate_metrics(vy_true_list, vy_pred_list, validation_metrics_dict, vloss_avg, epoch)
 

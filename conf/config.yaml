@@ -17,4 +17,4 @@ model:
   cont: False
   use_kan: False
   kernel_size: 2
-  omega_0: 20
+  omega_0: 30

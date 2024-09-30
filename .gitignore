@@ -10,3 +10,4 @@ training/results
 emovo.zip
 local.py
 testing/__pycache__
+batch.txt
