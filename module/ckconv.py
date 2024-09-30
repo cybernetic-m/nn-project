@@ -1,9 +1,9 @@
-# TO DO: add initialization of weight using gaussian
 import torch
 from torch import nn
 import torch.nn.functional as F
 from conv_kern_gen import conv_generator
 from convKan_kern_gen import convKan_generator
+import numpy as np
 
 
 class CKConv(nn.Module):
@@ -57,6 +57,8 @@ class CKConv(nn.Module):
         else:
             self.bias = None
 
+        self.initialize(omega_0=omega_0)
+
         self.register_buffer("previous_length", torch.zeros(1).int(), persistent=True)
 
         # If output_len = 0 => step_size of kernel_gen will be previous or current length
@@ -65,8 +67,6 @@ class CKConv(nn.Module):
             self.output_len = output_len 
         else:
             print("Error: output_len should be a non-negative number!")
-
-        
 
     def forward(self, x):
         # Input shape: torch.Size([1, 2, 100]) Stereo Sample (2 channels)
@@ -148,6 +148,33 @@ class CKConv(nn.Module):
                 x = F.pad(x, [self.output_len - 1,0], value=0.0)
 
         return x, conv_kernel
+    
+    def initialize(self, omega_0):
+
+        # Initialization of SIRENs
+        net_layer = 1
+        for layer in self.kernel_gen.modules():
+            if (
+                isinstance(layer, torch.nn.Conv1d)
+                or isinstance(layer, torch.nn.Conv2d)
+                or isinstance(layer, torch.nn.Linear)
+            ):
+                if net_layer == 1:
+                    layer.weight.data.uniform_(
+                        -1, 1
+                    )  # Normally (-1, 1) / in_dim but we only use 1D inputs.
+                    # Important! Bias is not defined in original SIREN implementation!
+                    net_layer += 1
+                else:
+                    layer.weight.data.uniform_(
+                        -np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
+                        # the in_size is dim 2 in the weights of Linear and Conv layers
+                        np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
+                    )
+                # Important! Bias is not defined in original SIREN implementation
+                if layer.bias is not None:
+                        layer.bias.data.uniform_(-0.1, 0.1)
+    
 if __name__ == '__main__' :
     tensor = torch.randn(1,2,145)
 

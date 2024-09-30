@@ -16,7 +16,7 @@ from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, use_kan = False, cont=False, tab_cont=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, omega_0=1, use_kan = False, cont=False, tab_cont=False, device='cpu'):
         
         super(CTIM,self).__init__()
 
@@ -26,9 +26,9 @@ class CTIM(nn.Module):
             n_temporal_aware_block = n_temporal_aware_block, 
             n_filter = n_filter, 
             in_channels = in_channels,
-            cont = tab_cont,
+            cont = cont,
             tab_cont = tab_cont,
-            num_features = num_features,
+            omega_0=omega_0,
             device = device
         )
 

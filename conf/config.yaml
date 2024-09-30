@@ -10,10 +10,11 @@ train:
 
 model:
   dropout_rate: 0.1
-  n_temporal_aware_block: 3 
+  n_temporal_aware_block: 3   
   n_filter: 64
   num_features: 182 
   tab_cont: False
   cont: False
   use_kan: False
   kernel_size: 2
+  omega_0: 10
