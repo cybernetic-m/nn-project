@@ -3,7 +3,6 @@ import os
 import torchaudio
 import torch
 from feature_extractor import feature_extractor
-from utils import smooth_label
 
 class EMOVO_Dataset(Dataset):
 

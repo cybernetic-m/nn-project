@@ -270,27 +270,32 @@ def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, va
   plt.tight_layout()  # This helps to prevent overlapping of subplots
   plt.show()
 
-def smooth_label(target: int, num_classes: int, smoothing: float = 0.1):
+def save_hydra_config(cfg, save_path):
     """
-    Converts a single label to a smoothed label distribution.
-    
-    Args:
-        target (int): The correct class label (index).
-        num_classes (int): Total number of classes.
-        smoothing (float): Smoothing factor (ε). Default is 0.1.
-    
-    Returns:
-        torch.Tensor: A tensor of size (num_classes,) with the smoothed label distribution.
+    Save Hydra configuration parameters to a specified text file.
+
+    :param cfg: Hydra config object
+    :param save_path: Path to save the text file
     """
-    assert 0 <= target < num_classes, "Target label must be between 0 and num_classes - 1"
-    
-    if smoothing > 0.0:
-        # Label smoothing logic
-        smoothed_labels = torch.full((num_classes,), smoothing / (num_classes - 1))
-        smoothed_labels[target] = 1.0 - smoothing
-    else:
-        # One-hot encoding logic (no smoothing)
-        smoothed_labels = torch.zeros(num_classes)
-        smoothed_labels[target] = 1.0
-    
-    return smoothed_labels
+    # Ensure the save directory exists
+    save_dir = os.path.dirname(save_path)
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    # Write the configuration to a text file
+    with open(save_path, 'w') as f:
+        f.write("Hydra Configuration Parameters:\n")
+        f.write("-" * 40 + "\n")
+        
+        # Recursively write the parameters in cfg
+        def recursive_print(cfg, f, indent=0):
+            for key, value in cfg.items():
+                if isinstance(value, dict):
+                    f.write(f"{' ' * indent}{key}:\n")
+                    recursive_print(value, f, indent + 4)
+                else:
+                    f.write(f"{' ' * indent}{key}: {value}\n")
+        
+        recursive_print(cfg, f)
+
+    print(f"Hydra configuration saved to {save_path}")

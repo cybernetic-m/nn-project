@@ -11,10 +11,10 @@ sys.path.append(utils_path)
 sys.path.append(training_path)
 
 # Import section
-from utils import calculate_metrics, save_metrics
+from utils import calculate_metrics, save_metrics, save_hydra_config
 from train_one_epoch import train_one_epoch
 
-def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_loader, validation_loader, model, loss_fn, optimizer):
+def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_loader, validation_loader, model, loss_fn, optimizer, cfg):
     
     best_vloss = 10000000000
 
@@ -76,10 +76,4 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
     save_metrics(training_metrics_dict, results_path + name_training_metrics)
     save_metrics(validation_metrics_dict, results_path + name_validation_metrics)
             
-
-
-
-
-
-
-
+    save_hydra_config(cfg, results_path+'/parameters.txt')
