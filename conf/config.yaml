@@ -5,8 +5,8 @@ train:
   optimizer: adam
   early_stopping: True
   patience: 5
-  weight_decay: 1e-5
-
+  lr_scheduler: 0.25
+  label_smoothing: 0.15
 
 model:
   dropout_rate: 0.1
