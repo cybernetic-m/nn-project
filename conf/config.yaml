@@ -18,3 +18,4 @@ model:
   use_kan: False
   kernel_size: 2
   omega_0: 25
+  is_siren: True 
