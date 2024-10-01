@@ -26,7 +26,7 @@ class EMOVO_Dataset(Dataset):
         torchaudio.save(path, tensor, sample_rate)
 
       if feature_extract:
-        features = extractor(tensor)
+        features = extractor.apply(tensor)
         class_ = self.classes.index(filename.split('-')[0])
         self.data.append((features,sample_rate))
         print(features)
