@@ -31,9 +31,9 @@ class feature_extractor():
         # After compute the MFCC and return it
 
         # Padding case (Add zeros): waveform.shape = 50, waveform_win = 325
-        if waveform.shape[2] < self.waveform_win:
+        if waveform.shape[1] < self.waveform_win:
             # Compute how much zeros to add symmetrically to the signal
-            pad_len = self.waveform_win - waveform.shape[2] # pad_len = 275
+            pad_len = self.waveform_win - waveform.shape[1] # pad_len = 275
             pad_remainder = pad_len % 2  # pad_remainder = 1 (Odd Number)
             pad_len = pad_len // 2  # pad_len = 137 (Integer part of the division)
 
@@ -51,7 +51,7 @@ class feature_extractor():
         # Trimming Case (Remove samples): waveform.shape = 200, waveform_win = 100                         
         else:
             # Compute how much zeros to remove symmetrically to the signal
-            pad_len = waveform.shape[2] - self.waveform_win # pad_len = 100
+            pad_len = waveform.shape[1] - self.waveform_win # pad_len = 100
             pad_len = pad_len // 2 # pad_len = 50
 
             # Take the centered part
