@@ -148,7 +148,7 @@ def dataset_split(dataset_dir, extract_dir, train_perc, test_perc, val_perc):
 def augment_data(dataset_src, extract_dir, transforms, device):
   process = psutil.Process(os.getpid())
   try:
-    type_of_prep_list = ['white_noise', 'shifted', 'pitch_speed'] 
+    type_of_prep_list = ['white_noise', 'shifted', 'pitch_speed', 'reverse'] 
     new_dataset_dir = os.path.join(extract_dir, 'EMOVO_aug')
     # Copy the entire directory to the new destination
     if not (os.path.exists(new_dataset_dir)):
@@ -163,10 +163,11 @@ def augment_data(dataset_src, extract_dir, transforms, device):
         if memory_usage > 1024*20:
           os.kill(os.getpid(), 9)
         waveform, sample_rate = torchaudio.load(new_dataset_dir_train + '/' + filename)
-        transformed_wave, type_of_prep = transforms(waveform.to(device))
-        name_augmentation = type_of_prep_list[type_of_prep]
-        new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
-        torchaudio.save(new_name, transformed_wave.cpu(), sample_rate)
+        transformed_samples = transforms(waveform.to(device))
+        for i, sample in enumerate(transformed_samples):
+          name_augmentation = type_of_prep_list[i]
+          new_name = new_dataset_dir_train + '/' + filename.split('.')[0] + '-' + name_augmentation + '.wav'
+          torchaudio.save(new_name, sample.cpu(), sample_rate)
 
     else:
       print("The augmented dataset already exist!")
