@@ -16,6 +16,10 @@ class EMOVO_Dataset(Dataset):
     extractor = feature_extractor() 
 
     file_list = os.listdir(dataset_dir)
+    
+    if feature_extract:
+      print("Extracting MFCC features...")
+    
     for filename in file_list:
       path = os.path.join(dataset_dir, filename)
       tensor, sample_rate = torchaudio.load(path)
@@ -29,7 +33,6 @@ class EMOVO_Dataset(Dataset):
         features = extractor.apply(tensor)
         class_ = self.classes.index(filename.split('-')[0])
         self.data.append((features,sample_rate))
-        print(features)
         self.labels.append(torch.tensor(class_))
 
       else:
