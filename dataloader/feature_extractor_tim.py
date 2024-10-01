@@ -51,7 +51,7 @@ class feature_extractor():
             print(mfcc.shape)
             
             # Flattening
-            mfcc = mfcc.view(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
+            mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
 
             
 
@@ -72,7 +72,7 @@ class feature_extractor():
             print(mfcc.shape)
 
             # Flattening
-            mfcc = mfcc.view(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
+            mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
 
         return mfcc
     
