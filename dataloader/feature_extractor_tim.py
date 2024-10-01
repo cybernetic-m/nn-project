@@ -47,8 +47,6 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(padded_waveform)
-
-            print(mfcc.shape)
             
             # Flattening
             mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
