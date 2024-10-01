@@ -1,6 +1,28 @@
 train:
-  num_epochs: 100
-  batch_size: 16
+  num_epochs: 500
+  batch_size: 64
+  learning_rate: 0.001
+  optimizer: adam
+  early_stopping: True
+  patience: 5
+  lr_scheduler: 0.25
+  label_smoothing: 0.1
+
+model:
+  dropout_rate: 0.1
+  n_temporal_aware_block: 8   
+  n_filter: 39
+  num_features: 182
+  tab_cont: True
+  cont: False
+  use_kan: False
+  kernel_size: 2
+  omega_0: 25
+  is_siren: True 
+
+train_experimental:
+  num_epochs: 500
+  batch_size: 64
   learning_rate: 0.000001
   optimizer: adam
   early_stopping: True
@@ -8,9 +30,9 @@ train:
   lr_scheduler: 0.25
   label_smoothing: 0.15
 
-model:
-  dropout_rate: 0.1
-  n_temporal_aware_block: 8   
+model_experimental:
+  dropout_rate: 0.2
+  n_temporal_aware_block: 10
   n_filter: 39
   num_features: 182
   tab_cont: True
