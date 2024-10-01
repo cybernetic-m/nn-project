@@ -35,6 +35,9 @@ class feature_extractor():
                 mfcc_mean
             ], dim=0)
             self.features.append(combined_features)
+
+    def apply_tim(self):
+        return ...
         
     def get_features(self):
         return self.features
