@@ -16,7 +16,7 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         # extract waveform from tuple (waveform, sample_rate)
         #print("x_data",x)
         x = x[0]
-        #print("x[0]",x.shape)
+        print("x[0]",x.shape)
 
         # Put the gradient to zero for every batch
         optimizer.zero_grad()
