@@ -60,7 +60,7 @@ class CKConv(nn.Module):
         else:
             self.bias = None
 
-        self.initialize(self, is_siren, omega_0, mean=0.0, variance=0.01, bias_value=0.0)
+        self.initialize(is_siren=is_siren, omega_0=omega_0, mean=0., variance=0.01, bias_value=0.)
 
         self.register_buffer("previous_length", torch.zeros(1).int(), persistent=True)
 
