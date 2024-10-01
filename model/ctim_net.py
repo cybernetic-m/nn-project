@@ -17,19 +17,21 @@ from preprocessing import invert_audio
 
 class CTIM_network(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, omega_0=1, cont=False, tab_cont=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, is_siren, omega_0=1, cont=False, tab_cont=False, device='cpu'):
         
         super(CTIM_network,self).__init__()
         if cont:
             self.conv_forward = CKConv(
                 input_channels=in_channels,
                 output_channels=n_filter,
+                is_siren=is_siren,  
                 device=device
             )
 
             self.conv_reverse = CKConv(
                 input_channels=in_channels,
                 output_channels=n_filter,
+                is_siren=is_siren,
                 device=device
             )
         else:
@@ -59,6 +61,7 @@ class CTIM_network(nn.Module):
                 dropout_rate=dropout_rate,
                 cont = tab_cont,
                 omega_0=omega_0,
+                is_siren=is_siren,
                 device=device
             )
             TempAw_Block_n_reverse = TempAw_Block(
@@ -67,7 +70,8 @@ class CTIM_network(nn.Module):
                 dilation_rate= dilation_rate,
                 dropout_rate= dropout_rate,
                 cont = tab_cont,
-                omega_0=omega_0,
+                omega_0=omega_0, 
+                is_siren=is_siren,  
                 device=device
             )
             self.TempAw_Blocks_forward.append(TempAw_Block_n_forward)

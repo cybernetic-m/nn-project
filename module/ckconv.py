@@ -8,7 +8,7 @@ import numpy as np
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True, device='cpu'):
+    def __init__(self, input_channels, output_channels, is_siren, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True, device='cpu'):
 
         super(CKConv, self).__init__()
 
@@ -21,6 +21,7 @@ class CKConv(nn.Module):
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
             bias= bias,
+            is_siren=is_siren,
             device=device
             )
         elif generator_type == 'convKan':
@@ -31,6 +32,7 @@ class CKConv(nn.Module):
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
             bias= bias,
+            is_siren=is_siren,
             device=device
             )
         else:
@@ -42,6 +44,7 @@ class CKConv(nn.Module):
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
             bias= bias,
+            is_siren=is_siren,
             device=device
             )
 
@@ -57,7 +60,7 @@ class CKConv(nn.Module):
         else:
             self.bias = None
 
-        self.initialize(omega_0=omega_0)
+        self.initialize(is_siren=is_siren, omega_0=omega_0, mean=0., variance=0.01, bias_value=0.)
 
         self.register_buffer("previous_length", torch.zeros(1).int(), persistent=True)
 
@@ -149,31 +152,76 @@ class CKConv(nn.Module):
 
         return x, conv_kernel
     
-    def initialize(self, omega_0):
+    def initialize(self, mean, variance, bias_value, is_siren, omega_0):
 
         # Initialization of SIRENs
         net_layer = 1
         for layer in self.kernel_gen.modules():
-            if (
-                isinstance(layer, torch.nn.Conv1d)
-                or isinstance(layer, torch.nn.Conv2d)
-                or isinstance(layer, torch.nn.Linear)
-            ):
-                if net_layer == 1:
-                    layer.weight.data.uniform_(
-                        -1, 1
-                    )  # Normally (-1, 1) / in_dim but we only use 1D inputs.
-                    # Important! Bias is not defined in original SIREN implementation!
-                    net_layer += 1
-                else:
-                    layer.weight.data.uniform_(
-                        -np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
-                        # the in_size is dim 2 in the weights of Linear and Conv layers
-                        np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
-                    )
-                # Important! Bias is not defined in original SIREN implementation
-                if layer.bias is not None:
-                        layer.bias.data.uniform_(-0.1, 0.1)
+            if is_siren:
+                if (
+                    isinstance(layer, torch.nn.Conv1d)
+                    or isinstance(layer, torch.nn.Conv2d)
+                    or isinstance(layer, torch.nn.Linear)
+                ):
+                    if net_layer == 1:
+                        layer.weight.data.uniform_(
+                            -1, 1
+                        )  # Normally (-1, 1) / in_dim but we only use 1D inputs.
+                        # Important! Bias is not defined in original SIREN implementation!
+                        net_layer += 1
+                    else:
+                        layer.weight.data.uniform_(
+                            -np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
+                            # the in_size is dim 2 in the weights of Linear and Conv layers
+                            np.sqrt(6.0 / layer.weight.shape[1]) / omega_0,
+                        )
+                    # Important! Bias is not defined in original SIREN implementation
+                    if layer.bias is not None:
+                            layer.bias.data.uniform_(-0.1, 0.1)
+            else:
+                # Initialization of ReLUs
+                intermediate_response = None
+                for (i, m) in enumerate(self.modules()):
+                    if (
+                        isinstance(m, torch.nn.Conv1d)
+                        or isinstance(m, torch.nn.Conv2d)
+                        or isinstance(m, torch.nn.Linear)
+                    ):
+                        m.weight.data.normal_(
+                            mean,
+                            variance,
+                        )
+                        if m.bias is not None:
+
+                            if net_layer == 1:
+                                # m.bias.data.fill_(bias_value)
+                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0])
+                                bias = -range * m.weight.data.clone().squeeze()
+                                m.bias = torch.nn.Parameter(bias)
+
+                                intermediate_response = [
+                                    m.weight.data.clone(),
+                                    m.bias.data.clone(),
+                                ]
+                                net_layer += 1
+
+                            elif net_layer == 2:
+                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0])
+                                range = range + (range[1] - range[0])
+                                range = (
+                                    range * intermediate_response[0].squeeze()
+                                    + intermediate_response[1]
+                                )
+
+                                bias = -torch.einsum(
+                                    "oi, i -> o", m.weight.data.clone().squeeze(), range
+                                )
+                                m.bias = torch.nn.Parameter(bias)
+
+                                net_layer += 1
+
+                            else:
+                                m.bias.data.fill_(bias_value)
     
 if __name__ == '__main__' :
     tensor = torch.randn(1,2,145)
