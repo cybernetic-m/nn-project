@@ -47,6 +47,11 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(padded_waveform)
+            
+            # Flattening
+            mfcc = mfcc.view[mfcc.shape[0], -1] # mfcc.shape = [2, 34047 (39*873)]
+
+            
 
         # Trimming Case (Remove samples): waveform.shape = 200, waveform_win = 100                         
         else:
@@ -60,9 +65,10 @@ class feature_extractor():
             trimmed_waveform = trimmed_waveform.cpu()
 
             # MFCC computation
-            mfcc = self.mfcc_transform(trimmed_waveform)
+            mfcc = self.mfcc_transform(trimmed_waveform) # mfcc.shape = [2, 39, 873]
 
-        print(mfcc.shape)
+            # Flattening
+            mfcc = mfcc.view[mfcc.shape[0], -1] # mfcc.shape = [2, 34047 (39*873)]
 
         return mfcc
     
