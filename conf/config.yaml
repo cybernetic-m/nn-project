@@ -1,7 +1,7 @@
 train:
   num_epochs: 500
-  batch_size: 32
-  learning_rate: 0.001 #0.000001
+  batch_size: 16 #32
+  learning_rate: 0.000001 #0.001 
   optimizer: adam
   early_stopping: True
   patience: 5
