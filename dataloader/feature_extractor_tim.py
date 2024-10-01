@@ -14,7 +14,7 @@ class feature_extractor():
             waveform, sample_rate = data
             waveform = waveform.cpu()
 
-            mfcc = self.mfcc(waveform, sample_rate, 40)
+            mfcc = self.mfcc(waveform, sample_rate, 39)
             # Average features across channels
             mfcc_mean = mfcc.mean(dim=0).mean(dim=1)  # Average across channels
 
