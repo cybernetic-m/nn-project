@@ -5,15 +5,15 @@ from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, is_siren, omega_0=1, cont=False, dropout_rate=0, device='cpu'):
+    def __init__(self, dilation_rate, n_filter, kernel_size, is_siren, omega_0=1, ck=False, dropout_rate=0, device='cpu'):
 
         super(TempAw_Block,self).__init__()
         
         self.kernel_size = kernel_size
         self.dilation_rate = dilation_rate
-        self.cont = cont
+        self.ck = ck
 
-        if cont:
+        if self.ck:
             self.conv1 = CKConv(
                 input_channels=n_filter,
                 output_channels = n_filter,
@@ -78,7 +78,7 @@ class TempAw_Block(nn.Module):
 
     def forward(self, x):
         
-        if not self.cont:
+        if not self.ck:
             x1 = F.pad(x, ((self.kernel_size-1) * self.dilation_rate, 0)) # Padding Causal 1
         else:
             x1 = x
@@ -90,7 +90,7 @@ class TempAw_Block(nn.Module):
         x2 = self.batch_norm1(x2)
         x2 = F.relu(x2)
         x2 = self.spatial_drop1(x2)
-        if not self.cont:
+        if not self.ck:
             x2 = F.pad(x2, ((self.kernel_size-1) * self.dilation_rate, 0))  # Padding Causal 2
         x3 = self.conv2(x2)
         x3 = self.batch_norm2(x3)

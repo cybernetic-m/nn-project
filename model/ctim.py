@@ -16,7 +16,7 @@ from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, is_siren, omega_0=1, use_kan = False, cont=False, tab_cont=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, is_siren, omega_0=1, use_kan = False, ck=False, device='cpu'):
         
         super(CTIM,self).__init__()
 
@@ -26,8 +26,7 @@ class CTIM(nn.Module):
             n_temporal_aware_block = n_temporal_aware_block, 
             n_filter = n_filter, 
             in_channels = in_channels,
-            cont = cont,
-            tab_cont = tab_cont,
+            ck = ck,
             omega_0=omega_0,
             is_siren=is_siren,
             device = device
@@ -51,14 +50,14 @@ class CTIM(nn.Module):
         # String of the model for saving
         self.parent_dir = ''
 
-        if tab_cont and use_kan:
-            self.model_name = 'ctimKan'
-        elif tab_cont:
-            self.model_name = 'ctim'
+        if ck:
+            self.model_name = 'ckTIM'
+        elif ck and use_kan:
+            self.model_name = 'ckTIMkAN'
         elif use_kan:
-            self.model_name = 'timKan'
+            self.model_name = 'TIMkAN'
         else:
-            self.model_name = 'tim'
+            self.model_name = 'TIM'
 
     def forward(self, x):
         x1 = self.ctim_net(x)
