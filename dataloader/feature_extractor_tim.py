@@ -55,7 +55,7 @@ class feature_extractor():
             pad_len = pad_len // 2 # pad_len = 50
 
             # Take the centered part
-            trimmed_waveform =  waveform[pad_len : pad_len+self.waveform_win] # trimmed_waveform[50:150] => trimmed_waveform.shape = 100
+            trimmed_waveform =  waveform[:,pad_len : pad_len+self.waveform_win] # trimmed_waveform[50:150] => trimmed_waveform.shape = 100
 
             trimmed_waveform = trimmed_waveform.cpu()
 
