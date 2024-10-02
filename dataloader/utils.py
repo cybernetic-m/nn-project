@@ -208,9 +208,9 @@ def load_metrics(path):
 def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch, test=False):
 
   current_acc = metrics.accuracy_score(y_true, y_pred)
-  current_prec = metrics.precision_score(y_true, y_pred, average='micro')
-  current_recall = metrics.recall_score(y_true, y_pred, average='micro')
-  current_f1_score = metrics.f1_score(y_true, y_pred, average='micro')
+  current_prec = metrics.precision_score(y_true, y_pred, average='macro')
+  current_recall = metrics.recall_score(y_true, y_pred, average='macro')
+  current_f1_score = metrics.f1_score(y_true, y_pred, average='macro')
   if test == False:
     metrics_dict["epoch"].append(epoch)
   metrics_dict["loss"].append(loss)
