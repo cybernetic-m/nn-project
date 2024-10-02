@@ -20,7 +20,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
 
     for epoch in range(num_epochs):
         
-        print(f'EPOCH {epoch + 1}:')
+        print(f'EPOCH {epoch + 1}/{num_epochs}:')
 
         # Compute the average loss and the predictions vs true values
         # Train the model for the single epoch
