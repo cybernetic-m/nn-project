@@ -91,6 +91,7 @@ class CTIM_network(nn.Module):
         for tab_forward,tab_reverse in zip(self.TempAw_Blocks_forward, self.TempAw_Blocks_reverse):
             x_forward = tab_forward(x_forward)
             x_reverse = tab_reverse(x_reverse)
+            #print()
             x_sum = torch.add(x_forward, x_reverse)
             #print(x_sum.shape)
             g_tensor = torch.mean(x_sum, dim=2)
