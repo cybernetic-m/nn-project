@@ -81,32 +81,37 @@ class CTIM_network(nn.Module):
         self.weights = nn.Parameter(torch.rand(n_temporal_aware_block, 1), requires_grad=True).to(device)  
   
     def forward(self, x):
+
+        #print("forward", x.shape)
+
         reverse_input = invert_audio(x)
+
+        #print("backard", reverse_input.shape)
 
         x_forward = self.conv_forward(x)
         x_reverse = self.conv_reverse(reverse_input)
-        print("x_forward", x_forward.shape)
-        print("x_reverse", x_reverse.shape)
+        #print("conv forward", x_forward.shape)
+        #print("conv backward", x_reverse.shape)
         g_list = []
         batch_size = x.shape[0]
         for tab_forward,tab_reverse in zip(self.TempAw_Blocks_forward, self.TempAw_Blocks_reverse):
             x_forward = tab_forward(x_forward)
             x_reverse = tab_reverse(x_reverse)
-            print("x_forward", x_forward.shape)
-            print("x_reverse", x_reverse.shape)
+            #print("skip_out_forward", x_forward.shape)
+            #print("skip_out backward", x_reverse.shape)
             x_sum = torch.add(x_forward, x_reverse)
-            print(x_sum.shape)
+            #print("temp skip add",x_sum.shape)
             g_tensor = torch.mean(x_sum, dim=2)
-            print("g_tensor",g_tensor.shape)
+            #print("temp skip pooling",g_tensor.shape)
             g_list.append(g_tensor)
         g = torch.cat(g_list).view(batch_size, -1, len(g_list))
-        print("g",g.shape)
+        #print("x",g.shape)
         # Dynamic Fusion block
-        print("self.weights",self.weights.shape)
+        #print("self.weights",self.weights.shape)
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
-        print("gdrf",gdrf.shape)
+        #print("gdrf",gdrf.shape)
         out = gdrf.view(batch_size, gdrf.shape[1]) # Transpose 
-        print(out.shape)
+        #print("out",out.shape)
 
         return out
     
