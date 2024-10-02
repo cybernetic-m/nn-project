@@ -46,19 +46,12 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
                 #print("vy_true",vy_true)                
                 vloss = loss_fn(vy_pred, vy_true)
                 #print("vloss",vloss)
-                vloss_epoch += vloss
-                vy_true_list += vy_true.tolist()
-                vy_pred_tmp = vy_pred.cpu().tolist()
-                vy_pred_li = []
-                for vy_pred_l in vy_pred_tmp:
-                    #print("y_pred_l",type(y_pred_l))
-                    vy_pred_li += [vy_pred_l.index(max(vy_pred_l))]
-                #print("y_pred_li", y_pred_li)
-                vy_pred_list += vy_pred_li
+                vloss_epoch += vloss.detach().item()
+                vy_true_list += vy_true.cpu().tolist()
+                vy_pred_list += torch.argmax(vy_pred.detach(), dim=1).cpu().tolist()
             #print("vloss_epoch", vloss_epoch)  
-            vloss_avg = vloss_epoch / i
-            vloss_avg = vloss_avg.item()
-
+            vloss_avg = vloss_epoch / len(validation_loader)
+            
             plateau_scheduler.step(vloss_avg)
 
             print("VALIDATION:")

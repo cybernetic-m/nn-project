@@ -40,18 +40,15 @@ def test(model, model_path, test_dataloader, test_metrics_dict, loss_fn):
             
             # Compute the loss
             loss_value = loss_fn(y_pred, y_true)
-            loss += loss_value # Incremental value for the average
+            loss += loss_value.detach().item() # Incremental value for the average
 
             # Create the list of the y_true and y_pred
             # Transform the tensor([3], device='cuda:0') in a list [6] and summing the lists y_true_list = [6, 1, 2, 4 ...]
             y_true_list += y_true.tolist()  
             # Argmax take the index (position) of the maximum value in y_pred => torch.argmax(y_pred) = tensor(6, device='mps:0') and item() take only the value 6
-            y_pred_tmp = torch.argmax(y_pred).item() 
-            y_pred_list += [y_pred_tmp] # y_pred_list = [6, 4, 3, 2, ....]
-
+            y_pred_list += torch.argmax(y_pred.detach(), dim=1).cpu().tolist()
     # Average Loss in testing
-    loss_avg = loss / i   # tensor(value, device = 'cuda:0')
-    loss_avg = loss_avg.item() # Take only value
+    loss_avg = loss / len(test_dataloader)   # tensor(value, device = 'cuda:0')
 
     calculate_metrics(y_true_list, y_pred_list, test_metrics_dict, loss_avg, i, test=True)
    
