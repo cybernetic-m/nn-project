@@ -300,3 +300,74 @@ def save_hydra_config(cfg, save_path):
         recursive_print(cfg, f)
 
     print(f"Hydra configuration saved to {save_path}")
+
+
+
+def dataset_split_mfcc(emovo_mfcc_np, extract_dir, train_perc, test_perc, val_perc):
+
+  split_dir = ['train', 'test', 'val']
+  new_dataset_dir = os.path.join(extract_dir, 'EMOVO_split_MFCC')
+  os.makedirs(new_dataset_dir, exist_ok=True)
+  for split in split_dir:
+    os.makedirs(os.path.join(new_dataset_dir, split), exist_ok=True)
+
+  classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
+  tmp_dir = os.path.join(extract_dir, 'EMOVO_tmp_MFCC')
+  os.makedirs(tmp_dir, exist_ok=True)
+  for class_ in classes:
+    os.makedirs(os.path.join(tmp_dir, class_), exist_ok=True)
+
+  # Merge the entire Dataset
+
+  data = np.load(emovo_mfcc_np, allow_pickle=True).item()
+  id = 0
+
+  for tensor, label in zip(data['x'], data['y']):
+    
+    id += 1
+    index = np.argmax(label)
+    filename_class = classes[index]
+    new_path = os.path.join(tmp_dir, filename_class, str(id) + '.npy')
+    np.save(new_path, tensor)
+
+  n_file = counter_classes(classes, tmp_dir)
+
+  # Data Split randomly
+  for class_ in classes:
+    random_vector = random.sample(range(1, n_file[class_] + 1), n_file[class_])
+
+    n_train = (n_file[class_] * train_perc)
+    n_test = (n_file[class_] * test_perc)
+    n_val = (n_file[class_] * val_perc)
+
+    train_index = random_vector[:int(n_train)]
+    test_index = random_vector[int(n_train):int(n_train) + int(n_test)]
+    val_index = random_vector[int(n_train) + int(n_test):]
+
+    for index in train_index:
+      filename = os.listdir(os.path.join(tmp_dir, class_))
+      filename_i = filename[index-1]
+      source_dir = os.path.join(tmp_dir, class_, filename_i)
+      target_dir = os.path.join(new_dataset_dir, 'train', class_ + filename_i)
+      tensor_i = np.load(source_dir)
+      tensor_i = np.transpose(tensor_i)
+      np.save(target_dir, tensor_i)
+
+    for index in test_index:
+      filename = os.listdir(os.path.join(tmp_dir, class_))
+      filename_i = filename[index-1]
+      source_dir = os.path.join(tmp_dir, class_, filename_i)
+      target_dir = os.path.join(new_dataset_dir, 'test', class_ + filename_i)
+      tensor_i = np.load(source_dir)
+      tensor_i = np.transpose(tensor_i)
+      np.save(target_dir, tensor_i)
+
+    for index in val_index:
+      filename = os.listdir(os.path.join(tmp_dir, class_))
+      filename_i = filename[index-1]
+      source_dir = os.path.join(tmp_dir, class_, filename_i)
+      target_dir = os.path.join(new_dataset_dir, 'val', class_ + filename_i)
+      tensor_i = np.load(source_dir)
+      tensor_i = np.transpose(tensor_i)
+      np.save(target_dir, tensor_i)
+

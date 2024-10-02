@@ -12,7 +12,7 @@ model:
   dropout_rate: 0.1 # 0.2
   n_temporal_aware_block: 8 # 10
   n_filter: 39
-  num_features: 34047
+  num_features: 188
   ck: False
   use_kan: False
   kernel_size: 2
