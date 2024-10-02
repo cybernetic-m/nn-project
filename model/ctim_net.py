@@ -93,17 +93,17 @@ class CTIM_network(nn.Module):
             x_reverse = tab_reverse(x_reverse)
             x_sum = torch.add(x_forward, x_reverse)
             #print(x_sum.shape)
-            g_tensor = torch.mean(x_sum, dim=1)
-            #print("g_tensor",g_tensor.shape)
+            g_tensor = torch.mean(x_sum, dim=2)
+            print("g_tensor",g_tensor.shape)
             g_list.append(g_tensor)
         g = torch.cat(g_list).view(batch_size, -1, len(g_list))
-        #print("g",g.shape)
+        print("g",g.shape)
         # Dynamic Fusion block
         #print("self.weights",self.weights.shape)
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
-        #print("gdrf",gdrf.shape)
+        print("gdrf",gdrf.shape)
         out = gdrf.view(batch_size, gdrf.shape[1]) # Transpose 
-        #print(out.shape)
+        print(out.shape)
 
         return out
     
