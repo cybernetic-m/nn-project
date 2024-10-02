@@ -85,26 +85,28 @@ class CTIM_network(nn.Module):
 
         x_forward = self.conv_forward(x)
         x_reverse = self.conv_reverse(reverse_input)
-
+        print("x_forward", x_forward.shape)
+        print("x_reverse", x_reverse.shape)
         g_list = []
         batch_size = x.shape[0]
         for tab_forward,tab_reverse in zip(self.TempAw_Blocks_forward, self.TempAw_Blocks_reverse):
             x_forward = tab_forward(x_forward)
             x_reverse = tab_reverse(x_reverse)
-            #print()
+            print("x_forward", x_forward.shape)
+            print("x_reverse", x_reverse.shape)
             x_sum = torch.add(x_forward, x_reverse)
-            #print(x_sum.shape)
+            print(x_sum.shape)
             g_tensor = torch.mean(x_sum, dim=2)
-            #print("g_tensor",g_tensor.shape)
+            print("g_tensor",g_tensor.shape)
             g_list.append(g_tensor)
         g = torch.cat(g_list).view(batch_size, -1, len(g_list))
-        #print("g",g.shape)
+        print("g",g.shape)
         # Dynamic Fusion block
-        #print("self.weights",self.weights.shape)
+        print("self.weights",self.weights.shape)
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
-        #print("gdrf",gdrf.shape)
+        print("gdrf",gdrf.shape)
         out = gdrf.view(batch_size, gdrf.shape[1]) # Transpose 
-        #print(out.shape)
+        print(out.shape)
 
         return out
     
