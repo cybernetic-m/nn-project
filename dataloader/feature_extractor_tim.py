@@ -47,12 +47,16 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(padded_waveform)
+            print(mfcc.shape)
 
             # Permutation
             mfcc = mfcc.permute(1,0,2) # mfcc.shape = [39, 2, 873]
+            print(mfcc.shape)
             
             # Flattening
             mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
+            print(mfcc.shape)
+
 
             
 
@@ -69,12 +73,15 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(trimmed_waveform) # mfcc.shape = [2, 39, 873]
+            print(mfcc.shape)
 
             # Permutation
             mfcc = mfcc.permute(1,0,2) # mfcc.shape = [39, 2, 873]
+            print(mfcc.shape)
 
             # Flattening
             mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
+            print(mfcc.shape)
 
         return mfcc
     
