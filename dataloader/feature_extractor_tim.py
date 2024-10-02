@@ -3,10 +3,10 @@ import torchaudio.transforms as T
 import torch.nn.functional as F
 
 class feature_extractor():
-    def __init__(self, waveform_sec = 5000, sample_rate = 22050, frame_length_ms = 50, frame_shift_ms = 12.5, n_ftt=2048, n_mfcc=39):
+    def __init__(self, waveform_sec = 2000, sample_rate = 22050, frame_length_ms = 50, frame_shift_ms = 12.5, n_ftt=2048, n_mfcc=39):
         
         # Convert waveform_sec from ms to samples
-        self.waveform_win = int(48000 * (waveform_sec / 1000)) # 5000 ms to samples
+        self.waveform_win = int(48000 * (waveform_sec / 1000)) # 2000 ms to samples
 
         # Convert frame length and shift from milliseconds to samples
         frame_length = int(sample_rate * (frame_length_ms / 1000))  # 50 ms to samples
@@ -47,6 +47,9 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(padded_waveform)
+
+            # Permutation
+            mfcc = mfcc.permute(1,0,2) # mfcc.shape = [39, 2, 873]
             
             # Flattening
             mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
@@ -66,6 +69,9 @@ class feature_extractor():
 
             # MFCC computation
             mfcc = self.mfcc_transform(trimmed_waveform) # mfcc.shape = [2, 39, 873]
+
+            # Permutation
+            mfcc = mfcc.permute(1,0,2) # mfcc.shape = [39, 2, 873]
 
             # Flattening
             mfcc = mfcc.reshape(mfcc.shape[0], -1) # mfcc.shape = [2, 34047 (39*873)]
