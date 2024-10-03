@@ -73,10 +73,10 @@ class CTIM(nn.Module):
     
     def training_mode(self):
         if self.use_kan == True:
-            self.ctim_net.train(True)
+            self.ctim_net.train()
         else:
-            self.ctim_net.train(True)
-            self.classifier.train(True)
+            self.ctim_net.train()
+            self.classifier.train()
     
     def eval_mode(self):
         if self.use_kan == True:
