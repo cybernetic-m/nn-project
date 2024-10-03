@@ -19,8 +19,6 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         x = x[0]
         device = x[0].device
         
-        y_true = y_true.type(torch.float32)  # preditions of network are floats
-
         # Put the gradient to zero for every batch
         optimizer.zero_grad()
 
