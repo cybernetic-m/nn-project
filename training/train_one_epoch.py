@@ -1,4 +1,5 @@
 import torch
+import gc
 
 def train_one_epoch (training_loader, model, loss_fn, optimizer):
 
@@ -12,10 +13,13 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
         # Divide the tuple data in inputs tensor and labels tensor (batch_size dimension)
         #print(data)
         x, y_true = data
-
+        
         # extract waveform from tuple (waveform, sample_rate)
         #print("x_data",x)
         x = x[0]
+        device = x[0].device
+        
+        y_true = y_true.type(torch.float32)  # preditions of network are floats
 
         # Put the gradient to zero for every batch
         optimizer.zero_grad()
@@ -46,14 +50,23 @@ def train_one_epoch (training_loader, model, loss_fn, optimizer):
 
         #print("y_pred", y_pred.cpu().tolist())
         y_pred_list += torch.argmax(y_pred.detach(), dim=1).cpu().tolist()
+
+        del x, y_true, y_pred, loss_value
+        gc.collect()
+
         '''
         print("y_true_list", y_true_list)
         print("y_pred_list", y_pred_list)
         print("y_pred", y_pred)
         print("torch.argmax(y_pred)", torch.argmax(y_pred))
         '''
+
     
-    loss_avg = loss_epoch / len(training_loader)   # tensor(value, device = 'cuda:0')
+
+    if device == "cuda":
+        torch.cuda.empty_cache()
+
+    loss_avg = loss_epoch / len(training_loader)   
     
     return loss_avg, y_pred_list, y_true_list
 

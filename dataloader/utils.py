@@ -239,16 +239,7 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
 
 def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, validation_accuracy):
 
-  # Is it necessary to use numpy?
-  '''
-  epochs = np.linspace(0, len(epochs), 1)
   
-  training_loss = np.array(training_loss)
-  validation_loss = np.array(validation_loss)
-  training_accuracy = np.array(training_accuracy)
-  validation_accuracy = np.array(validation_accuracy)
-  '''
-
   fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
 
   # Set the functions, title, x_label, y_label and legend for the loss 
@@ -265,7 +256,7 @@ def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, va
   ax[1].set_title('Accuracy')
   ax[1].set_xlabel('Epochs')
   ax[1].set_ylabel('Accuracy value')
-  ax[0].legend()
+  ax[1].legend()
 
   # Display the plot
   plt.tight_layout()  # This helps to prevent overlapping of subplots
