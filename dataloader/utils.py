@@ -239,7 +239,6 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
 
 def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, validation_accuracy):
 
-  
   fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
 
   # Set the functions, title, x_label, y_label and legend for the loss 
@@ -253,6 +252,58 @@ def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, va
   # Set the functions, title, x_label, y_label and legend for the accuracy
   ax[1].plot(epochs, training_accuracy, label='Training Accuracy', color='b')
   ax[1].plot(epochs, validation_accuracy, label='Validation Accuracy', color='r')
+  ax[1].set_title('Accuracy')
+  ax[1].set_xlabel('Epochs')
+  ax[1].set_ylabel('Accuracy value')
+  ax[1].legend()
+
+  # Display the plot
+  plt.tight_layout()  # This helps to prevent overlapping of subplots
+  plt.show()
+
+def plot_loss_acc_aug (epochs, training_loss_noaug, training_loss_aug, training_accuracy_noaug, training_accuracy_aug):
+
+  fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
+
+  # Set the functions, title, x_label, y_label and legend for the loss 
+  ax[0].plot(epochs, training_loss_noaug, label='Loss no augmentation', color='b')
+  ax[0].plot(epochs, training_loss_aug, label='Loss with augmentation', color='r')
+  ax[0].set_title('Training Loss')
+  ax[0].set_xlabel('Epochs')
+  ax[0].set_ylabel('Loss value')
+  ax[0].legend()
+
+  # Set the functions, title, x_label, y_label and legend for the loss 
+  ax[1].plot(epochs, training_accuracy_noaug, label='Accuracy no augmentation', color='b')
+  ax[1].plot(epochs, training_accuracy_aug, label='Accuracy with augmentation', color='r')
+  ax[1].set_title('Accuracy')
+  ax[1].set_xlabel('Epochs')
+  ax[1].set_ylabel('Accuracy value')
+  ax[1].legend()
+
+  # Display the plot
+  plt.tight_layout()  # This helps to prevent overlapping of subplots
+  plt.show()
+
+def plot_cross_model_loss_acc (epochs, training_loss_tim, training_loss_timkan, training_acc_tim, training_acc_timkan):
+
+  fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
+
+  # Set the functions, title, x_label, y_label and legend for the loss 
+  ax[0].plot(epochs, training_loss_tim, label='TIM-net', color='b')
+  ax[0].plot(epochs, training_loss_timkan, label='TIMkAN', color='r')
+  #ax[0].plot(epochs, training_loss_cktim, label='CkTIM', color='g')
+  #ax[0].plot(epochs, training_loss_cktimkan, label='CkTIMkAN', color='p')
+  ax[0].set_title('Training Loss')
+  ax[0].set_xlabel('Epochs')
+  ax[0].set_ylabel('Loss value')
+  ax[0].legend()
+
+  # Set the functions, title, x_label, y_label and legend for the loss 
+  ax[1].plot(epochs, training_acc_tim, label='TIM-net', color='b')
+  ax[1].plot(epochs, training_acc_timkan, label='TIMkAN', color='r')
+  #ax[0].plot(epochs, training_acc_cktim, label='CkTIM', color='g')
+  #ax[0].plot(epochs, training_acc_cktimkan, label='CkTIMkAN', color='p')
   ax[1].set_title('Accuracy')
   ax[1].set_xlabel('Epochs')
   ax[1].set_ylabel('Accuracy value')
