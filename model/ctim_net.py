@@ -93,7 +93,6 @@ class CTIM_network(nn.Module):
         #print("conv forward", x_forward.shape)
         #print("conv backward", x_reverse.shape)
         g_list = []
-        batch_size = x.shape[0]
         for tab_forward,tab_reverse in zip(self.TempAw_Blocks_forward, self.TempAw_Blocks_reverse):
             x_forward = tab_forward(x_forward)
             x_reverse = tab_reverse(x_reverse)
@@ -104,13 +103,15 @@ class CTIM_network(nn.Module):
             g_tensor = torch.mean(x_sum, dim=2)
             #print("temp skip pooling",g_tensor.shape)
             g_list.append(g_tensor)
-        g = torch.cat(g_list).view(batch_size, -1, len(g_list))
+        g = torch.stack(g_list, dim=1)
+
+        g = g.transpose(1,2)
         #print("x",g.shape)
         # Dynamic Fusion block
         #print("self.weights",self.weights.shape)
         gdrf = torch.matmul(g, self.weights) # Weighted summation at the end
         #print("gdrf",gdrf.shape)
-        out = gdrf.view(batch_size, gdrf.shape[1]) # Transpose 
+        out = gdrf.squeeze(-1) # Transpose 
         #print("out",out.shape)
 
         return out
