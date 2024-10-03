@@ -31,7 +31,7 @@ class CTIM(nn.Module):
             omega_0=omega_0,
             is_siren=is_siren,
             device = device
-        )
+        ).to(device)
 
         # TO DO (At the moment it is not implemented)
         if use_kan == True:
