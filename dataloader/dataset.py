@@ -3,7 +3,7 @@ import os
 import torchaudio
 import torch
 import numpy as np
-from feature_extractor_tim import feature_extractor
+from dataloader.feature_extractor import feature_extractor
 
 class EMOVO_Dataset(Dataset):
 
