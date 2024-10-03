@@ -54,7 +54,7 @@ def test(model, model_path, test_dataloader, test_metrics_dict, loss_fn):
    
     cm = sklearn.metrics.confusion_matrix(y_true=y_true_list, y_pred=y_pred_list, labels=[0,1,2,3,4,5,6])
     
-    results_path = testing_path
+    results_path = model_path[:-8]
 
     name_test_metrics = f'/{model.model_name}_test_metrics.json'
    

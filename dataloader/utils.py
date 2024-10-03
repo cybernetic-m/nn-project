@@ -221,9 +221,7 @@ def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch, test=False):
 
   print(f"accuracy: {current_acc*100:.2f}, precision: {current_prec*100:.2f}, recall: {current_recall*100:.2f}, f1-score: {current_f1_score*100:.2f}")
 
-
-def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Matrix', cmap='Oranges'):
-
+def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Matrix', cmap='Oranges', save_path=None):
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
@@ -234,32 +232,35 @@ def plot_confusion_matrix(cm, class_names, normalize=False, title='Confusion Mat
     plt.title(title)
     plt.xlabel('Predicted label')
     plt.ylabel('True label')
+
+    if save_path:
+        plt.savefig(save_path[:-8]+'confusion_matrix')  # Save the figure to the specified path
     plt.show()
 
+def plot_loss_acc(epochs, training_loss, validation_loss, training_accuracy, validation_accuracy, save_path=None):
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14, 6))
 
-def plot_loss_acc (epochs, training_loss, validation_loss, training_accuracy, validation_accuracy):
+    # Set the functions, title, x_label, y_label and legend for the loss 
+    ax[0].plot(epochs, training_loss, label='Training Loss', color='b')
+    ax[0].plot(epochs, validation_loss, label='Validation Loss', color='r')
+    ax[0].set_title('Loss')
+    ax[0].set_xlabel('Epochs')
+    ax[0].set_ylabel('Loss value')
+    ax[0].legend()
 
-  fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
+    # Set the functions, title, x_label, y_label and legend for the accuracy
+    ax[1].plot(epochs, training_accuracy, label='Training Accuracy', color='b')
+    ax[1].plot(epochs, validation_accuracy, label='Validation Accuracy', color='r')
+    ax[1].set_title('Accuracy')
+    ax[1].set_xlabel('Epochs')
+    ax[1].set_ylabel('Accuracy value')
+    ax[1].legend()
 
-  # Set the functions, title, x_label, y_label and legend for the loss 
-  ax[0].plot(epochs, training_loss, label='Training Loss', color='b')
-  ax[0].plot(epochs, validation_loss, label='Validation Loss', color='r')
-  ax[0].set_title('Loss')
-  ax[0].set_xlabel('Epochs')
-  ax[0].set_ylabel('Loss value')
-  ax[0].legend()
+    plt.tight_layout()  # This helps to prevent overlapping of subplots
 
-  # Set the functions, title, x_label, y_label and legend for the accuracy
-  ax[1].plot(epochs, training_accuracy, label='Training Accuracy', color='b')
-  ax[1].plot(epochs, validation_accuracy, label='Validation Accuracy', color='r')
-  ax[1].set_title('Accuracy')
-  ax[1].set_xlabel('Epochs')
-  ax[1].set_ylabel('Accuracy value')
-  ax[1].legend()
-
-  # Display the plot
-  plt.tight_layout()  # This helps to prevent overlapping of subplots
-  plt.show()
+    if save_path:
+        plt.savefig(save_path[:-8]+'loss_acc')  # Save the figure to the specified path
+    plt.show()
 
 def plot_loss_acc_aug (epochs, training_loss_noaug, training_loss_aug, training_accuracy_noaug, training_accuracy_aug):
 
