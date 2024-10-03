@@ -67,7 +67,8 @@ class CTIM(nn.Module):
         x1 = self.ctim_net(x)
         x1 = self.classifier(x1)
         #print(x1.shape)
-        out = F.softmax(x1, dim=-1)
+        #out = F.softmax(x1, dim=-1)
+        out = x1
 
         return out
     
