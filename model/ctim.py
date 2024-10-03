@@ -5,6 +5,7 @@ import os
 import sys
 import datetime
 import shutil
+from kan import KAN
 
 # Get the absolute paths of the directories containing the modules
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../model'))
@@ -30,11 +31,14 @@ class CTIM(nn.Module):
             omega_0=omega_0,
             is_siren=is_siren,
             device = device
-        )
+        ).to(device)
 
         # TO DO (At the moment it is not implemented)
         if use_kan == True:
-            self.classifier = ...
+            self.classifier = KAN(
+                width=[num_features, num_classes],
+                device=device
+                )
         else:
             self.classifier = nn.Linear(
                 in_features = num_features,
@@ -69,10 +73,10 @@ class CTIM(nn.Module):
     
     def training_mode(self):
         if self.use_kan == True:
-            self.ctim_net.train(True)
+            self.ctim_net.train()
         else:
-            self.ctim_net.train(True)
-            self.classifier.train(True)
+            self.ctim_net.train()
+            self.classifier.train()
     
     def eval_mode(self):
         if self.use_kan == True:
