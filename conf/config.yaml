@@ -14,7 +14,7 @@ model:
   n_filter: 39
   num_features: 39
   ck: False
-  use_kan: False
+  use_kan: True
   kernel_size: 2
   omega_0: 25
   is_siren: True 
