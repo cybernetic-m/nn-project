@@ -195,7 +195,7 @@ class CKConv(nn.Module):
 
                             if net_layer == 1:
                                 # m.bias.data.fill_(bias_value)
-                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0])
+                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0], device=self.device)
                                 bias = -range * m.weight.data.clone().squeeze()
                                 m.bias = torch.nn.Parameter(bias)
 
@@ -206,7 +206,7 @@ class CKConv(nn.Module):
                                 net_layer += 1
 
                             elif net_layer == 2:
-                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0])
+                                range = torch.linspace(-1.0, 1.0, steps=m.weight.shape[0], device=self.device)
                                 range = range + (range[1] - range[0])
                                 range = (
                                     range * intermediate_response[0].squeeze()
