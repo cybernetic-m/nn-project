@@ -4,6 +4,21 @@
     ],
     "epoch": [],
     "loss": [
+<<<<<<< HEAD:results/ckTIMKAN_noaug/ckTIMKAN_test_metrics.json
+        38.062740325927734
+    ],
+    "accuracy": [
+        0.5982142857142857
+    ],
+    "recall": [
+        0.5982142857142857
+    ],
+    "precision": [
+        0.6064019314019314
+    ],
+    "f1_score": [
+        0.5977444223986649
+=======
         54.811763763427734
     ],
     "accuracy": [
@@ -17,5 +32,6 @@
     ],
     "f1_score": [
         0.5108968561301219
+>>>>>>> 7001b410a32bfcb45d2b678a00a960df6216ec1a:results/ckTIMKAN_noaug/ckTIMkAN_test_metrics.json
     ]
 }
