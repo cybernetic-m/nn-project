@@ -5,7 +5,7 @@ from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, is_siren, omega_0=1, ck=False, dropout_rate=0, device='cpu'):
+    def __init__(self, dilation_rate, n_filter, kernel_size, is_siren, omega_0=1, ck=False, dropout_rate=0.1, device='cpu'):
 
         super(TempAw_Block,self).__init__()
         
@@ -19,6 +19,7 @@ class TempAw_Block(nn.Module):
                 output_channels = n_filter,
                 omega_0=omega_0,
                 is_siren=is_siren,
+                dropout_rate=dropout_rate,
                 device=device
             )
 
@@ -27,6 +28,7 @@ class TempAw_Block(nn.Module):
                 output_channels = n_filter,
                 omega_0=omega_0,
                 is_siren=is_siren,
+                dropout_rate=dropout_rate,
                 device=device
             )
         
