@@ -55,9 +55,9 @@ class CTIM(nn.Module):
         self.parent_dir = ''
 
         if ck and use_kan:
-            self.model_name = 'ckTIMkAN'
+            self.model_name = 'CkTIMkAN'
         elif ck:
-            self.model_name = 'ckTIM'
+            self.model_name = 'CkTIM'
         elif use_kan:
             self.model_name = 'TIMkAN'
         else:
