@@ -8,43 +8,44 @@ import numpy as np
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, is_siren, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True, device='cpu'):
+    def __init__(self,
+                input_channels,
+                output_channels,
+                output_len = 0,
+                hidden_dim=32,
+                omega_0=1,
+                dropout_rate=0.1,
+                hidden_scale=1,
+                generator_type='conv',
+                af_type=False,
+                bias = True,
+                device='cpu'):
 
         super(CKConv, self).__init__()
 
         
-        if generator_type == 'conv':
+        if generator_type=='convKan':
+            self.kernel_gen = convKan_generator(
+            input_channels = 1,
+            output_channels = input_channels * output_channels,
+            hidden_dim = hidden_dim,
+            omega_0 = omega_0,
+            dropout_rate = dropout_rate,
+            hidden_scale=hidden_scale,
+            bias= bias,
+            af_type=af_type,
+            device=device
+            )
+        if generator_type=='conv':
             self.kernel_gen = conv_generator(
             input_channels = 1,
             output_channels = input_channels * output_channels,
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
+            hidden_scale=hidden_scale,
             bias= bias,
-            is_siren=is_siren,
-            device=device
-            )
-        elif generator_type == 'convKan':
-            self.kernel_gen = convKan_generator(
-            input_channels = input_channels,
-            output_channels = output_channels,
-            hidden_dim = hidden_dim,
-            omega_0 = omega_0,
-            dropout_rate = dropout_rate,
-            bias= bias,
-            is_siren=is_siren,
-            device=device
-            )
-        else:
-            print('error in generator type using conv as default')
-            self.kernel_gen = conv_generator(
-            input_channels = input_channels,
-            output_channels = output_channels,
-            hidden_dim = hidden_dim,
-            omega_0 = omega_0,
-            dropout_rate = dropout_rate,
-            bias= bias,
-            is_siren=is_siren,
+            af_type=af_type,
             device=device
             )
 
@@ -60,7 +61,7 @@ class CKConv(nn.Module):
         else:
             self.bias = None
 
-        self.initialize(is_siren=is_siren, omega_0=omega_0, mean=0., variance=0.01, bias_value=0.)
+        self.initialize(af_type=af_type, omega_0=omega_0, mean=0., variance=0.01, bias_value=0.)
 
         self.register_buffer("previous_length", torch.zeros(1).int(), persistent=True)
 
@@ -152,12 +153,12 @@ class CKConv(nn.Module):
 
         return x, conv_kernel
     
-    def initialize(self, mean, variance, bias_value, is_siren, omega_0):
+    def initialize(self, mean, variance, bias_value, af_type, omega_0):
 
         # Initialization of SIRENs
         net_layer = 1
         for layer in self.kernel_gen.modules():
-            if is_siren:
+            if 'sin' in af_type :
                 if (
                     isinstance(layer, torch.nn.Conv1d)
                     or isinstance(layer, torch.nn.Conv2d)
