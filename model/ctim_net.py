@@ -17,7 +17,17 @@ from preprocessing import invert_audio
 
 class CTIM_network(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, is_siren, omega_0=25, generator_kan=False, ck=False, device='cpu'):
+    def __init__(self,
+                kernel_size,
+                dropout_rate,
+                n_temporal_aware_block,
+                n_filter, in_channels,
+                is_siren,
+                learnable_activation=False,
+                omega_0=25,
+                generator_kan=False,
+                ck=False,
+                device='cpu'):
         
         super(CTIM_network,self).__init__()
         if ck:
@@ -25,7 +35,8 @@ class CTIM_network(nn.Module):
                 input_channels=in_channels,
                 output_channels=n_filter,
                 is_siren=is_siren,
-                generator_type=generator_kan,
+                learnable_activation=learnable_activation,
+                generator_kan=generator_kan,
                 device=device
             )
 
@@ -33,7 +44,8 @@ class CTIM_network(nn.Module):
                 input_channels=in_channels,
                 output_channels=n_filter,
                 is_siren=is_siren,
-                generator_type=generator_kan,
+                learnable_activation=learnable_activation,
+                generator_kan=generator_kan,
                 device=device
             )
         else:
@@ -64,6 +76,7 @@ class CTIM_network(nn.Module):
                 ck = ck,
                 omega_0=omega_0,
                 is_siren=is_siren,
+                learnable_activation=False,
                 generator_kan=generator_kan,
                 device=device
             )
@@ -75,6 +88,7 @@ class CTIM_network(nn.Module):
                 ck = ck,
                 omega_0=omega_0, 
                 is_siren=is_siren,
+                learnable_activation=False,
                 generator_kan=generator_kan,
                 device=device
             )

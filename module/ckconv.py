@@ -8,13 +8,24 @@ import numpy as np
 
 class CKConv(nn.Module):
 
-    def __init__(self, input_channels, output_channels, is_siren, output_len = 0, hidden_dim=32, omega_0=1, dropout_rate=0.5, generator_type='conv', bias = True, device='cpu'):
+    def __init__(self,
+                input_channels,
+                output_channels,
+                is_siren,
+                output_len = 0,
+                hidden_dim=32,
+                omega_0=1,
+                dropout_rate=0.5,
+                generator_kan=False,
+                learnable_activation=False,
+                bias = True,
+                device='cpu'):
 
         super(CKConv, self).__init__()
 
         
-        if generator_type == 'conv':
-            self.kernel_gen = conv_generator(
+        if generator_kan:
+            self.kernel_gen = convKan_generator(
             input_channels = 1,
             output_channels = input_channels * output_channels,
             hidden_dim = hidden_dim,
@@ -24,27 +35,16 @@ class CKConv(nn.Module):
             is_siren=is_siren,
             device=device
             )
-        elif generator_type == 'convKan':
-            self.kernel_gen = convKan_generator(
-            input_channels = input_channels,
-            output_channels = output_channels,
-            hidden_dim = hidden_dim,
-            omega_0 = omega_0,
-            dropout_rate = dropout_rate,
-            bias= bias,
-            is_siren=is_siren,
-            device=device
-            )
         else:
-            print('error in generator type using conv as default')
             self.kernel_gen = conv_generator(
-            input_channels = input_channels,
-            output_channels = output_channels,
+            input_channels = 1,
+            output_channels = input_channels * output_channels,
             hidden_dim = hidden_dim,
             omega_0 = omega_0,
             dropout_rate = dropout_rate,
             bias= bias,
             is_siren=is_siren,
+            learnable_activation=learnable_activation,
             device=device
             )
 

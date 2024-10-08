@@ -17,7 +17,19 @@ from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, is_siren, omega_0=1, generator_kan = False, ck=False, device='cpu'):
+    def __init__(self,
+                kernel_size,
+                dropout_rate,
+                n_temporal_aware_block,
+                n_filter, in_channels,
+                num_features,
+                num_classes,
+                is_siren,
+                learnable_activation=False,
+                omega_0=1,
+                generator_kan = False,
+                ck=False,
+                device='cpu'):
         
         super(CTIM,self).__init__()
 
@@ -30,6 +42,7 @@ class CTIM(nn.Module):
             ck = ck,
             omega_0=omega_0,
             is_siren=is_siren,
+            learnable_activation=False,
             generator_kan = generator_kan,
             device = device
         ).to(device)

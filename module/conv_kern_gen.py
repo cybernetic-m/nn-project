@@ -1,11 +1,12 @@
 import torch
 from torch import nn
 import torch.nn.functional as F  
-from torch.nn.utils.parametrizations import weight_norm  
+from torch.nn.utils.parametrizations import weight_norm
+from kafnets import KAF
 
 class conv_generator(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, is_siren, dropout_rate, bias = True, device='cpu'):
+    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, is_siren, dropout_rate, learnable_activation=False, bias = True, device='cpu'):
 
         super(conv_generator,self).__init__()
 
@@ -49,7 +50,14 @@ class conv_generator(nn.Module):
         self.dropout = nn.Dropout(
             p=dropout_rate
         )
-
+        self.learnable_activation = learnable_activation
+        if learnable_activation:
+            if self.is_siren:
+                self.kaf1 = KAF(hidden_dim, conv=True, init_fcn=torch.sin)
+                self.kaf2 = KAF(hidden_dim, conv=True, init_fcn=torch.sin)
+            else:
+                self.kaf1 = KAF(hidden_dim, conv=True)
+                self.kaf2 = KAF(hidden_dim, conv=True)
 
     def forward(self,x):
         #print("Input shape:", x.shape)
@@ -66,7 +74,10 @@ class conv_generator(nn.Module):
         if self.is_siren:
             x1 = torch.sin(x1)
         else:
-            x1 = F.relu(x1)
+            if self.learnable_activation:
+                x1 = self.kaf1(x1)
+            else:
+                x1 = F.relu(x1)
         #print("Activation Function ->:",x1)
         #print("Activation Function ->:",x1.shape)
 
@@ -80,7 +91,10 @@ class conv_generator(nn.Module):
         if self.is_siren:
             x2 = torch.sin(x2)
         else:
-            x2 = F.relu(x2)
+            if self.learnable_activation:
+                x2 = self.kaf2(x2)
+            else:
+                x2 = F.relu(x2)
         #print("Activation Function ->:",x2.shape)
 
         x3 = self.linear_output(x2)
