@@ -72,11 +72,7 @@ class CTIM(nn.Module):
 
     def forward(self, x):
         x1 = self.ctim_net(x)
-        x1 = self.classifier(x1)
-        #print(x1.shape)
-        #out = F.softmax(x1, dim=-1)
-        out = x1
-
+        out = self.classifier(x1)       
         return out
 
     def save(self, path):
