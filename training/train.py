@@ -24,7 +24,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
 
         # Compute the average loss and the predictions vs true values
         # Train the model for the single epoch
-        model.training_mode()
+        model.train()
         loss_avg, y_pred_list, y_true_list = train_one_epoch(training_loader, model, loss_fn, optimizer)
 
         # Calculate the metrics
@@ -33,7 +33,7 @@ def train (num_epochs, training_metrics_dict, validation_metrics_dict, training_
         
         # Validation part (disable the gradient computation)
         # Set the model in validation mode
-        model.eval_mode() 
+        model.eval() 
         with torch.no_grad():
             vy_pred_list = []
             vy_true_list = []

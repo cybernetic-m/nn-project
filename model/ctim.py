@@ -17,7 +17,7 @@ from ctim_net import CTIM_network
 
 class CTIM(nn.Module):
 
-    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, is_siren, omega_0=1, use_kan = False, ck=False, device='cpu'):
+    def __init__(self, kernel_size, dropout_rate, n_temporal_aware_block, n_filter, in_channels, num_features, num_classes, is_siren, omega_0=1, generator_kan = False, ck=False, device='cpu'):
         
         super(CTIM,self).__init__()
 
@@ -30,35 +30,30 @@ class CTIM(nn.Module):
             ck = ck,
             omega_0=omega_0,
             is_siren=is_siren,
+            generator_kan = generator_kan,
             device = device
         ).to(device)
 
-        
-        if use_kan == True:
-            self.classifier = KAN(
-                width=[num_features, num_classes],
-                )
-            self.classifier.to(device)
-        else:
-            self.classifier = nn.Linear(
-                in_features = num_features,
-                out_features = num_classes,
-                bias = True,
-                device=device
-            )
+    
+        self.classifier = nn.Linear(
+            in_features = num_features,
+            out_features = num_classes,
+            bias = True,
+            device=device
+        )
 
         # The number of classes (EMOVO => 7)
         self.num_classes = num_classes
-        self.use_kan = use_kan
+        self.generator_kan = generator_kan
 
         # String of the model for saving
         self.parent_dir = ''
 
-        if ck and use_kan:
+        if ck and generator_kan:
             self.model_name = 'CkTIMkAN'
         elif ck:
             self.model_name = 'CkTIM'
-        elif use_kan:
+        elif generator_kan:
             self.model_name = 'TIMkAN'
         else:
             self.model_name = 'TIM'
@@ -71,20 +66,6 @@ class CTIM(nn.Module):
         out = x1
 
         return out
-    
-    def training_mode(self):
-        if self.use_kan == True:
-            self.ctim_net.train()
-        else:
-            self.ctim_net.train()
-            self.classifier.train()
-    
-    def eval_mode(self):
-        if self.use_kan == True:
-            self.ctim_net.eval()
-        else:
-            self.ctim_net.eval()
-            self.classifier.eval()
 
     def save(self, path):
         current_datetime = datetime.datetime.now() # Take the actual date and time 
