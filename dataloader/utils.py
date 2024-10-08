@@ -12,6 +12,7 @@ import numpy as np
 import torchaudio
 import torch
 import psutil
+from prettytable import PrettyTable
 dataloader_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
 # Add these directories to sys.path
 sys.path.append(dataloader_path)
@@ -413,4 +414,18 @@ def dataset_split_mfcc(emovo_mfcc_np, extract_dir, train_perc, test_perc, val_pe
       tensor_i = np.load(source_dir)
       tensor_i = np.transpose(tensor_i)
       np.save(target_dir, tensor_i)
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        params = parameter.numel()
+        table.add_row([name, params])
+        total_params += params
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+    return total_params
+
 
