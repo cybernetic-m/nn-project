@@ -35,7 +35,7 @@ class CKConv(nn.Module):
             bias= bias,
             af_type=af_type,
             device=device
-            )
+            ).to(device)
         if generator_type=='conv':
             self.kernel_gen = conv_generator(
             input_channels = 1,
