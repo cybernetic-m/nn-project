@@ -6,7 +6,7 @@ from kafnets import KAF
 
 class conv_generator(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, dropout_rate, hidden_scale=1, af_type='siren', bias = True, device='cpu'):
+    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, dropout_rate, hidden_scale=1, af_type='sin', bias = True, device='cpu'):
 
         super(conv_generator,self).__init__()
 

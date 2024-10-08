@@ -17,7 +17,7 @@ class CKConv(nn.Module):
                 dropout_rate=0.1,
                 hidden_scale=1,
                 generator_type='conv',
-                af_type=False,
+                af_type='sin',
                 bias = True,
                 device='cpu'):
 

@@ -23,9 +23,9 @@ class CTIM_network(nn.Module):
                 n_temporal_aware_block,
                 n_filter, in_channels,
                 hidden_scale=1,
-                af_type=False,
+                af_type='sin',
                 omega_0=25,
-                generator_type=False,
+                generator_type='conv',
                 ck=False,
                 device='cpu'):
         

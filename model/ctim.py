@@ -23,7 +23,7 @@ class CTIM(nn.Module):
                 n_filter, in_channels,
                 num_features,
                 num_classes,
-                af_type=False,
+                af_type='sin',
                 omega_0=1,
                 generator_type='conv',
                 hidden_scale=1,
