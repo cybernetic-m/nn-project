@@ -16,5 +16,6 @@ model:
   ck: False
   kernel_size: 2
   omega_0: 25
+  hidden_scale: 1
   is_siren: True 
   aug: False
