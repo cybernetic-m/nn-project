@@ -62,7 +62,7 @@ class conv_generator(nn.Module):
         x1 = self.linear_input(x)
         #print("Linear + Weight ->:", x1) 
         #print("Linear + Weight ->:",x1.shape)
-        if self.is_siren:
+        if self.af_type=='sin':
             x1 = self.omega_0 * x1
         #print("Multiply ->:",x1)
         #print("Multiply ->:",x1.shape)
@@ -80,7 +80,7 @@ class conv_generator(nn.Module):
 
         x2 = self.linear_hidden(x1)
         #print("Linear + Weight ->:",x2.shape)
-        if self.is_siren:
+        if self.af_type=='sin':
             x2 = self.omega_0 * x2
         #print("Multiply ->:",x2.shape)
         x2 = self.batch_norm2(x2)

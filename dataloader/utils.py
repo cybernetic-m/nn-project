@@ -206,14 +206,22 @@ def load_metrics(path):
   else:
     print("The file", path, "does not exists!")
     
-def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch, test=False):
+def calculate_metrics(y_true, y_pred, metrics_dict, loss, epoch, inference_time_list = None, test=False):
 
   current_acc = metrics.accuracy_score(y_true, y_pred)
   current_prec = metrics.precision_score(y_true, y_pred, average='macro', zero_division=0)
   current_recall = metrics.recall_score(y_true, y_pred, average='macro', zero_division=0)
   current_f1_score = metrics.f1_score(y_true, y_pred, average='macro', zero_division=0)
+
+  if not inference_time_list == None:
+    inference_time_one_sample = round(torch.tensor(inference_time_list).mean().item(),3)
+    inference_time_tot = round(torch.tensor(inference_time_list).sum().item(),3)
+    metrics_dict["inference_time_one_sample"].append(inference_time_one_sample)
+    metrics_dict["inference_time_tot"].append(inference_time_tot)
+
   if test == False:
     metrics_dict["epoch"].append(epoch)
+
   metrics_dict["loss"].append(loss)
   metrics_dict["accuracy"].append(current_acc)
   metrics_dict["precision"].append(current_prec)
@@ -348,72 +356,74 @@ def save_hydra_config(cfg, save_path):
 
 
 def dataset_split_mfcc(emovo_mfcc_np, extract_dir, train_perc, test_perc, val_perc):
-
-  split_dir = ['train', 'test', 'val']
   new_dataset_dir = os.path.join(extract_dir, 'EMOVO_split_MFCC')
-  os.makedirs(new_dataset_dir, exist_ok=True)
-  for split in split_dir:
-    os.makedirs(os.path.join(new_dataset_dir, split), exist_ok=True)
+  if not os.path.exists(new_dataset_dir):
+    split_dir = ['train', 'test', 'val']
+    os.makedirs(new_dataset_dir, exist_ok=True)
+    for split in split_dir:
+      os.makedirs(os.path.join(new_dataset_dir, split), exist_ok=True)
 
-  classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
-  tmp_dir = os.path.join(extract_dir, 'EMOVO_tmp_MFCC')
-  os.makedirs(tmp_dir, exist_ok=True)
-  for class_ in classes:
-    os.makedirs(os.path.join(tmp_dir, class_), exist_ok=True)
+    classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
+    tmp_dir = os.path.join(extract_dir, 'EMOVO_tmp_MFCC')
+    os.makedirs(tmp_dir, exist_ok=True)
+    for class_ in classes:
+      os.makedirs(os.path.join(tmp_dir, class_), exist_ok=True)
 
-  # Merge the entire Dataset
+    # Merge the entire Dataset
 
-  data = np.load(emovo_mfcc_np, allow_pickle=True).item()
-  id = 0
+    data = np.load(emovo_mfcc_np, allow_pickle=True).item()
+    id = 0
 
-  for tensor, label in zip(data['x'], data['y']):
-    
-    id += 1
-    index = np.argmax(label)
-    filename_class = classes[index]
-    new_path = os.path.join(tmp_dir, filename_class, str(id) + '.npy')
-    np.save(new_path, tensor)
+    for tensor, label in zip(data['x'], data['y']):
+      
+      id += 1
+      index = np.argmax(label)
+      filename_class = classes[index]
+      new_path = os.path.join(tmp_dir, filename_class, str(id) + '.npy')
+      np.save(new_path, tensor)
 
-  n_file = counter_classes(classes, tmp_dir)
+    n_file = counter_classes(classes, tmp_dir)
 
-  # Data Split randomly
-  for class_ in classes:
-    random_vector = random.sample(range(1, n_file[class_] + 1), n_file[class_])
+    # Data Split randomly
+    for class_ in classes:
+      random_vector = random.sample(range(1, n_file[class_] + 1), n_file[class_])
 
-    n_train = (n_file[class_] * train_perc)
-    n_test = (n_file[class_] * test_perc)
-    n_val = (n_file[class_] * val_perc)
+      n_train = (n_file[class_] * train_perc)
+      n_test = (n_file[class_] * test_perc)
+      n_val = (n_file[class_] * val_perc)
 
-    train_index = random_vector[:int(n_train)]
-    test_index = random_vector[int(n_train):int(n_train) + int(n_test)]
-    val_index = random_vector[int(n_train) + int(n_test):]
+      train_index = random_vector[:int(n_train)]
+      test_index = random_vector[int(n_train):int(n_train) + int(n_test)]
+      val_index = random_vector[int(n_train) + int(n_test):]
 
-    for index in train_index:
-      filename = os.listdir(os.path.join(tmp_dir, class_))
-      filename_i = filename[index-1]
-      source_dir = os.path.join(tmp_dir, class_, filename_i)
-      target_dir = os.path.join(new_dataset_dir, 'train', class_ + filename_i)
-      tensor_i = np.load(source_dir)
-      tensor_i = np.transpose(tensor_i)
-      np.save(target_dir, tensor_i)
+      for index in train_index:
+        filename = os.listdir(os.path.join(tmp_dir, class_))
+        filename_i = filename[index-1]
+        source_dir = os.path.join(tmp_dir, class_, filename_i)
+        target_dir = os.path.join(new_dataset_dir, 'train', class_ + filename_i)
+        tensor_i = np.load(source_dir)
+        tensor_i = np.transpose(tensor_i)
+        np.save(target_dir, tensor_i)
 
-    for index in test_index:
-      filename = os.listdir(os.path.join(tmp_dir, class_))
-      filename_i = filename[index-1]
-      source_dir = os.path.join(tmp_dir, class_, filename_i)
-      target_dir = os.path.join(new_dataset_dir, 'test', class_ + filename_i)
-      tensor_i = np.load(source_dir)
-      tensor_i = np.transpose(tensor_i)
-      np.save(target_dir, tensor_i)
+      for index in test_index:
+        filename = os.listdir(os.path.join(tmp_dir, class_))
+        filename_i = filename[index-1]
+        source_dir = os.path.join(tmp_dir, class_, filename_i)
+        target_dir = os.path.join(new_dataset_dir, 'test', class_ + filename_i)
+        tensor_i = np.load(source_dir)
+        tensor_i = np.transpose(tensor_i)
+        np.save(target_dir, tensor_i)
 
-    for index in val_index:
-      filename = os.listdir(os.path.join(tmp_dir, class_))
-      filename_i = filename[index-1]
-      source_dir = os.path.join(tmp_dir, class_, filename_i)
-      target_dir = os.path.join(new_dataset_dir, 'val', class_ + filename_i)
-      tensor_i = np.load(source_dir)
-      tensor_i = np.transpose(tensor_i)
-      np.save(target_dir, tensor_i)
+      for index in val_index:
+        filename = os.listdir(os.path.join(tmp_dir, class_))
+        filename_i = filename[index-1]
+        source_dir = os.path.join(tmp_dir, class_, filename_i)
+        target_dir = os.path.join(new_dataset_dir, 'val', class_ + filename_i)
+        tensor_i = np.load(source_dir)
+        tensor_i = np.transpose(tensor_i)
+        np.save(target_dir, tensor_i)
+  else:
+    print("MFCC features already exists!")
 
 def count_parameters(model):
     table = PrettyTable(["Modules", "Parameters"])

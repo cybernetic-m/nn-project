@@ -17,7 +17,7 @@ from utils import calculate_metrics, save_metrics
 def test(model, model_path, test_dataloader, test_metrics_dict, loss_fn):
 
     # Set the model in evaluation mode
-    model.eval_mode()
+    model.eval()
     
     # Load the weights
     model.load(model_path)
@@ -63,7 +63,7 @@ def test(model, model_path, test_dataloader, test_metrics_dict, loss_fn):
     # Average Loss in testing
     loss_avg = loss / len(test_dataloader)   # tensor(value, device = 'cuda:0')
 
-    calculate_metrics(y_true_list, y_pred_list, test_metrics_dict, loss_avg, i, test=True)
+    calculate_metrics(y_true_list, y_pred_list, test_metrics_dict, loss_avg, i, inference_time_list, test=True)
    
     cm = sklearn.metrics.confusion_matrix(y_true=y_true_list, y_pred=y_pred_list, labels=[0,1,2,3,4,5,6])
     

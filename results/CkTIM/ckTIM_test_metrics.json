@@ -1,10 +1,10 @@
 {
     "model": [
-        "ckTIM"
+        "CkTIM"
     ],
     "epoch": [],
     "loss": [
-        84.25013732910156
+        86.07742837414013
     ],
     "accuracy": [
         0.6696428571428571
@@ -17,5 +17,11 @@
     ],
     "f1_score": [
         0.6636754438922499
+    ],
+    "inference_time_one_sample": [
+        0.208
+    ],
+    "inference_time_tot": [
+        23.281
     ]
 }

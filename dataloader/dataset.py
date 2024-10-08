@@ -53,15 +53,6 @@ class EMOVO_Dataset(Dataset):
         self.labels.append(torch.tensor(label))
 
     self.device = device
-    
-    '''
-    if feature_extract:
-      feature_extracto = feature_extractor(self)
-      feature_extracto.apply()
-      feature = feature_extracto.get_features()
-      for i in range(len(self.data)):
-        self.data[i] = (feature[i].unsqueeze(0), self.data[i][1])
-    ''' 
 
   def __len__(self):
     return len(self.data)

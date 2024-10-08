@@ -17,5 +17,11 @@
     ],
     "f1_score": [
         0.9105872903312403
+    ],
+    "inference_time_one_sample": [
+        0.012
+    ],
+    "inference_time_tot": [
+        1.342
     ]
 }
