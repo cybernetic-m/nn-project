@@ -17,3 +17,4 @@ model/0.0_state
 model/history.txt
 model/0.0_cache_data
 notebook_results.ipynb
+module/convkan/__pycache__
