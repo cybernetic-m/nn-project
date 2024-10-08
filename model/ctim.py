@@ -5,7 +5,6 @@ import os
 import sys
 import datetime
 import shutil
-from kan import MultKAN as KAN
 
 # Get the absolute paths of the directories containing the modules
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../model'))
@@ -24,10 +23,10 @@ class CTIM(nn.Module):
                 n_filter, in_channels,
                 num_features,
                 num_classes,
-                is_siren,
-                learnable_activation=False,
+                af_type=False,
                 omega_0=1,
-                generator_kan = False,
+                generator_type='conv',
+                hidden_scale=1,
                 ck=False,
                 device='cpu'):
         
@@ -41,9 +40,9 @@ class CTIM(nn.Module):
             in_channels = in_channels,
             ck = ck,
             omega_0=omega_0,
-            is_siren=is_siren,
-            learnable_activation=False,
-            generator_kan = generator_kan,
+            af_type=af_type,
+            generator_type = generator_type,
+            hidden_scale=hidden_scale,
             device = device
         ).to(device)
 
@@ -57,17 +56,17 @@ class CTIM(nn.Module):
 
         # The number of classes (EMOVO => 7)
         self.num_classes = num_classes
-        self.generator_kan = generator_kan
+        self.generator_kan = generator_type
 
         # String of the model for saving
         self.parent_dir = ''
 
-        if ck and generator_kan:
-            self.model_name = 'CkTIMkAN'
-        elif ck:
-            self.model_name = 'CkTIM'
-        elif generator_kan:
-            self.model_name = 'TIMkAN'
+        if ck and generator_type=='convKan':
+            self.model_name = 'CkkTIM' # Continuous and convolutional KAN Kernel TIM-net
+
+        elif ck and generator_type=='conv':
+            self.model_name = 'CkTIM' # Continuous convolutional Kernel TIM-net
+
         else:
             self.model_name = 'TIM'
 

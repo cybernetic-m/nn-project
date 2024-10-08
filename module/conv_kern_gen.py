@@ -6,31 +6,30 @@ from kafnets import KAF
 
 class conv_generator(nn.Module):
 
-    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, is_siren, dropout_rate, learnable_activation=False, bias = True, device='cpu'):
+    def __init__(self, input_channels, output_channels, hidden_dim, omega_0, dropout_rate, hidden_scale=1, af_type='siren', bias = True, device='cpu'):
 
         super(conv_generator,self).__init__()
 
         self.omega_0 = omega_0
-        self.is_siren=is_siren
         
         self.linear_input = weight_norm(nn.Conv1d(
             input_channels,
-            hidden_dim,
+            int(hidden_dim*hidden_scale),
             kernel_size=1,
             bias=bias,
             device=device
         ))
 
         self.linear_hidden = weight_norm(nn.Conv1d(
-            hidden_dim,
-            hidden_dim,
+            int(hidden_dim*hidden_scale),
+            int(hidden_dim*hidden_scale),
             kernel_size=1,
             bias=bias,
             device=device
         ))
 
         self.linear_output = weight_norm(nn.Conv1d(
-            hidden_dim,
+            int(hidden_dim*hidden_scale),
             output_channels,
             kernel_size=1,
             bias=bias,
@@ -38,26 +37,25 @@ class conv_generator(nn.Module):
         ))
 
         self.batch_norm1 = nn.BatchNorm1d(
-            num_features=hidden_dim,
+            num_features=int(hidden_dim*hidden_scale),
             device=device
         )
 
         self.batch_norm2 = nn.BatchNorm1d(
-            num_features=hidden_dim,
+            num_features=int(hidden_dim*hidden_scale),
             device=device
         )
 
         self.dropout = nn.Dropout(
             p=dropout_rate
         )
-        self.learnable_activation = learnable_activation
-        if learnable_activation:
-            if self.is_siren:
-                self.kaf1 = KAF(hidden_dim, conv=True, init_fcn=torch.sin)
-                self.kaf2 = KAF(hidden_dim, conv=True, init_fcn=torch.sin)
-            else:
-                self.kaf1 = KAF(hidden_dim, conv=True)
-                self.kaf2 = KAF(hidden_dim, conv=True)
+        self.af_type = af_type
+        if af_type == 'KAF':
+            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True)
+            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True)
+        if af_type == 'KAFsin':
+            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=torch.sin)
+            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=torch.sin)
 
     def forward(self,x):
         #print("Input shape:", x.shape)
@@ -71,13 +69,12 @@ class conv_generator(nn.Module):
         x1 = self.batch_norm1(x1)
         #print("Norm ->:",x1)
         #print("Norm ->:",x1.shape)
-        if self.is_siren:
+        if self.af_type =='sin':
             x1 = torch.sin(x1)
-        else:
-            if self.learnable_activation:
-                x1 = self.kaf1(x1)
-            else:
-                x1 = F.relu(x1)
+        if 'KAF' in self.af_type:
+            x1 = self.kaf1(x1)
+        if self.af_type == 'ReLu':
+            x1 = F.relu(x1)
         #print("Activation Function ->:",x1)
         #print("Activation Function ->:",x1.shape)
 
@@ -88,13 +85,12 @@ class conv_generator(nn.Module):
         #print("Multiply ->:",x2.shape)
         x2 = self.batch_norm2(x2)
         #print("Norm ->:",x2.shape)
-        if self.is_siren:
+        if self.af_type =='sin':
             x2 = torch.sin(x2)
-        else:
-            if self.learnable_activation:
-                x2 = self.kaf2(x2)
-            else:
-                x2 = F.relu(x2)
+        if 'KAF' in self.af_type:
+            x2 = self.kaf1(x2)
+        if self.af_type == 'ReLu':
+            x2 = F.relu(x2)
         #print("Activation Function ->:",x2.shape)
 
         x3 = self.linear_output(x2)

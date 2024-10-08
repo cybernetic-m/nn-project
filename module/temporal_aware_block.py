@@ -5,7 +5,7 @@ from ckconv import CKConv
 
 class TempAw_Block(nn.Module):
 
-    def __init__(self, dilation_rate, n_filter, kernel_size, is_siren, learnable_activation=False, omega_0=1, generator_kan=True, ck=False, dropout_rate=0.1, device='cpu'):
+    def __init__(self, dilation_rate, n_filter, kernel_size, hidden_scale=1, af_type='sin', omega_0=1, generator_type='conv', ck=False, dropout_rate=0.1, device='cpu'):
 
         super(TempAw_Block,self).__init__()
         
@@ -18,21 +18,21 @@ class TempAw_Block(nn.Module):
                 input_channels=n_filter,
                 output_channels = n_filter,
                 omega_0=omega_0,
-                is_siren=is_siren,
                 dropout_rate=dropout_rate,
-                generator_kan=generator_kan,
-                learnable_activation=learnable_activation,
+                generator_type=generator_type,
+                af_type=af_type,
+                hidden_scale=hidden_scale,
                 device=device
             )
-                
+
             self.conv2 = CKConv(
                 input_channels=n_filter,
                 output_channels = n_filter,
                 omega_0=omega_0,
-                is_siren=is_siren,
-                learnable_activation=learnable_activation,
+                af_type=af_type,
                 dropout_rate=dropout_rate,
-                generator_kan=generator_kan,
+                generator_type=generator_type,
+                hidden_scale=hidden_scale,
                 device=device
             )
         
@@ -55,7 +55,6 @@ class TempAw_Block(nn.Module):
 
         self.batch_norm1 = nn.BatchNorm1d(
             num_features=n_filter,
- 
             device=device
         )
 

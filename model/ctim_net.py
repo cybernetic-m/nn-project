@@ -22,10 +22,10 @@ class CTIM_network(nn.Module):
                 dropout_rate,
                 n_temporal_aware_block,
                 n_filter, in_channels,
-                is_siren,
-                learnable_activation=False,
+                hidden_scale=1,
+                af_type=False,
                 omega_0=25,
-                generator_kan=False,
+                generator_type=False,
                 ck=False,
                 device='cpu'):
         
@@ -34,18 +34,18 @@ class CTIM_network(nn.Module):
             self.conv_forward = CKConv(
                 input_channels=in_channels,
                 output_channels=n_filter,
-                is_siren=is_siren,
-                learnable_activation=learnable_activation,
-                generator_kan=generator_kan,
+                af_type=af_type,
+                hidden_scale= hidden_scale,
+                generator_type=generator_type,
                 device=device
             )
 
             self.conv_reverse = CKConv(
                 input_channels=in_channels,
                 output_channels=n_filter,
-                is_siren=is_siren,
-                learnable_activation=learnable_activation,
-                generator_kan=generator_kan,
+                af_type=af_type,
+                hidden_scale= hidden_scale,
+                generator_type=generator_type,
                 device=device
             )
         else:
@@ -75,9 +75,9 @@ class CTIM_network(nn.Module):
                 dropout_rate=dropout_rate,
                 ck = ck,
                 omega_0=omega_0,
-                is_siren=is_siren,
-                learnable_activation=False,
-                generator_kan=generator_kan,
+                af_type=af_type,
+                hidden_scale= hidden_scale,
+                generator_type=generator_type,
                 device=device
             )
             TempAw_Block_n_reverse = TempAw_Block(
@@ -86,10 +86,10 @@ class CTIM_network(nn.Module):
                 dilation_rate= dilation_rate,
                 dropout_rate= dropout_rate,
                 ck = ck,
-                omega_0=omega_0, 
-                is_siren=is_siren,
-                learnable_activation=False,
-                generator_kan=generator_kan,
+                omega_0=omega_0,
+                af_type=af_type,
+                hidden_scale= hidden_scale,
+                generator_type=generator_type,
                 device=device
             )
             self.TempAw_Blocks_forward.append(TempAw_Block_n_forward)
