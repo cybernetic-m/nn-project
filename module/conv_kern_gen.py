@@ -3,6 +3,7 @@ from torch import nn
 import torch.nn.functional as F  
 from torch.nn.utils.parametrizations import weight_norm
 from kafnets import KAF
+import numpy as np
 
 class conv_generator(nn.Module):
 
@@ -54,8 +55,12 @@ class conv_generator(nn.Module):
             self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True)
             self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True)
         if af_type == 'KAFsin':
-            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=torch.sin)
-            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=torch.sin)
+
+            def sin_fcn(x):
+                return np.sin(x)
+
+            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=sin_fcn)
+            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=sin_fcn)
 
     def forward(self,x):
         #print("Input shape:", x.shape)

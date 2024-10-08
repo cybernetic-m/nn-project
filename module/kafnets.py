@@ -52,8 +52,8 @@ class KAF(nn.Module):
         
         # Save the dictionary
         if self.conv:
-            self.register_buffer('dict', torch.from_numpy(self.dict_numpy).view(1, 1, 1, 1, -1))
-            self.unsqueeze_dim = 4
+            self.register_buffer('dict', torch.from_numpy(self.dict_numpy).view(1, 1, 1, -1)) 
+            self.unsqueeze_dim = 3
         else:
             self.register_buffer('dict', torch.from_numpy(self.dict_numpy).view(1, -1))
             self.unsqueeze_dim = 2
@@ -70,8 +70,8 @@ class KAF(nn.Module):
           self.gamma_init = float(0.5 / np.square(sigma))
           
           # Initialize gamma
-          if self.conv:
-              self.register_buffer('gamma', torch.from_numpy(np.ones((1, 1, 1, 1, self.D), dtype=np.float32)*self.gamma_init))
+          if self.conv:         
+              self.register_buffer('gamma', torch.from_numpy(np.ones((1, 1, 1, self.D), dtype=np.float32)*self.gamma_init))
           else:
               self.register_buffer('gamma', torch.from_numpy(np.ones((1, 1, self.D), dtype=np.float32)*self.gamma_init))
           
@@ -82,7 +82,7 @@ class KAF(nn.Module):
 
         # Initialize mixing coefficients
         if self.conv:
-            self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, 1, 1, self.D))
+            self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, self.D))
         else:
             self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, self.D))
         
@@ -109,7 +109,7 @@ class KAF(nn.Module):
     def reset_parameters(self):
         if self.init_fcn != None:
             if self.conv:
-                self.alpha.data = torch.from_numpy(self.alpha_init).repeat(1, self.num_parameters, 1, 1, 1)
+                self.alpha.data = torch.from_numpy(self.alpha_init).repeat(1, self.num_parameters, 1, 1)
             else:
                 self.alpha.data = torch.from_numpy(self.alpha_init).repeat(1, self.num_parameters, 1)
         else:
