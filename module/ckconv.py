@@ -231,12 +231,21 @@ if __name__ == '__main__' :
             input_channels = 2,
             output_channels = 2,
             hidden_dim = 32,
-            generator_type= 'conv',
-            output_len=50,
-            bias = False,
             omega_0 = 1,
-            dropout_rate = 0.5,
-        )
+            output_len = 0,
+            dropout_rate=0.1,
+            hidden_scale=0.1,
+            generator_type='conv',
+            af_type='sin',
+            bias = True,
+            device='cpu')
+
 
     out = ckconv(tensor)
+    import os
+    import sys
+    utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../dataloader'))
+    sys.path.append(utils_path)
+    from utils import count_parameters
 
+    count_parameters(ckconv.kernel_gen)

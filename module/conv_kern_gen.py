@@ -105,6 +105,3 @@ class conv_generator(nn.Module):
         #print("Dropout ->:",out.shape)
 
         return out
-
-
-
