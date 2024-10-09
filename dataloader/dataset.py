@@ -34,13 +34,13 @@ class EMOVO_Dataset(Dataset):
         if feature_extract:
           features = extractor.apply(tensor)
           class_ = self.classes.index(filename.split('-')[0])
-          self.data.append((features,sample_rate))
-          self.labels.append(torch.tensor(class_))
+          self.data.append((features.to(device),sample_rate))
+          self.labels.append(torch.tensor(class_).to(device))
 
         else:
           class_ = self.classes.index(filename.split('-')[0])
-          self.data.append((tensor,sample_rate))
-          self.labels.append(torch.tensor(class_))
+          self.data.append((tensor.to(device),sample_rate))
+          self.labels.append(torch.tensor(class_).to(device))
       
     else:
       for filename in file_list:
@@ -49,10 +49,8 @@ class EMOVO_Dataset(Dataset):
         tensor = torch.tensor(tensor)
         label_name = filename[0:3]
         label = self.classes.index(label_name)
-        self.data.append((tensor,48000))
-        self.labels.append(torch.tensor(label))
-
-    self.device = device
+        self.data.append((tensor.to(device),48000))
+        self.labels.append(torch.tensor(label).to(device))
 
   def __len__(self):
     return len(self.data)
@@ -60,8 +58,8 @@ class EMOVO_Dataset(Dataset):
   def __getitem__(self, idx):
 
     data = self.data[idx]
-    data = (data[0].to(self.device), data[1])
-    label = self.labels[idx].to(self.device)
+    data = (data[0], data[1])
+    label = self.labels[idx]
 
     return data, label
 
