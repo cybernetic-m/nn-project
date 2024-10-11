@@ -52,15 +52,15 @@ class conv_generator(nn.Module):
         )
         self.af_type = af_type
         if af_type == 'KAF':
-            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True)
-            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True)
+            self.kaf1 = KAF(188, conv=True)
+            self.kaf2 = KAF(188, conv=True)
         if af_type == 'KAFsin':
 
             def sin_fcn(x):
                 return np.sin(x)
 
-            self.kaf1 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=sin_fcn)
-            self.kaf2 = KAF(int(hidden_dim*hidden_scale), conv=True, init_fcn=sin_fcn)
+            self.kaf1 = KAF(188, conv=True, init_fcn=sin_fcn)
+            self.kaf2 = KAF(188, conv=True, init_fcn=sin_fcn)
 
     def forward(self,x):
         #print("Input shape:", x.shape)
