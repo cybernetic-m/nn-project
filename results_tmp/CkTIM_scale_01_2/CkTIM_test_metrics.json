@@ -1,0 +1,30 @@
+{
+    "model": [
+        "CkTIM"
+    ],
+    "epoch": [],
+    "loss": [
+        8.843320099074079
+    ],
+    "accuracy": [
+        0.6071428571428571
+    ],
+    "recall": [
+        0.6071428571428571
+    ],
+    "precision": [
+        0.6214002267573696
+    ],
+    "f1_score": [
+        0.6006970071195423
+    ],
+    "inference_time_one_sample": [
+        0.213
+    ],
+    "inference_time_tot": [
+        23.888
+    ],
+    "trainable_parameters": [
+        262578
+    ]
+}
