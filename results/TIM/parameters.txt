@@ -1,4 +1,4 @@
 Hydra Configuration Parameters:
 ----------------------------------------
 train: {'num_epochs': 100, 'batch_size': 64, 'learning_rate': 0.001, 'optimizer': 'adam', 'early_stopping': True, 'patience': 5, 'lr_scheduler': 0.25, 'label_smoothing': 0.1}
-model: {'dropout_rate': 0.1, 'n_temporal_aware_block': 8, 'n_filter': 39, 'num_features': 39, 'ck': False, 'use_kan': False, 'kernel_size': 2, 'omega_0': 25, 'is_siren': True}
+model: {'dropout_rate': 0.1, 'n_temporal_aware_block': 8, 'n_filter': 39, 'num_features': 39, 'ck': False, 'generator_type': 'conv', 'kernel_size': 2, 'omega_0': 25, 'hidden_scale': 1, 'af_type': 'sin', 'aug': False}
