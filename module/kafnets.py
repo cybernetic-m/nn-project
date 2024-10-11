@@ -82,7 +82,7 @@ class KAF(nn.Module):
 
         # Initialize mixing coefficients
         if self.conv:
-            self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, self.D))
+            self.alpha = Parameter(torch.FloatTensor(1, 1, self.num_parameters, self.D))
         else:
             self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, self.D))
         
@@ -109,9 +109,9 @@ class KAF(nn.Module):
     def reset_parameters(self):
         if self.init_fcn != None:
             if self.conv:
-                self.alpha.data = torch.from_numpy(self.alpha_init).repeat(1, self.num_parameters, 1, 1)
+                self.alpha = Parameter(torch.FloatTensor(1, 1, self.num_parameters, self.D))
             else:
-                self.alpha.data = torch.from_numpy(self.alpha_init).repeat(1, self.num_parameters, 1)
+                self.alpha = Parameter(torch.FloatTensor(1, self.num_parameters, self.D))
         else:
             normal_(self.alpha.data, std=0.8)
     
