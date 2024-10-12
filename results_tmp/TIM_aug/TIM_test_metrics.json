@@ -1,0 +1,30 @@
+{
+    "model": [
+        "TIM"
+    ],
+    "epoch": [],
+    "loss": [
+        0.11553933490774528
+    ],
+    "accuracy": [
+        1.0
+    ],
+    "recall": [
+        1.0
+    ],
+    "precision": [
+        1.0
+    ],
+    "f1_score": [
+        1.0
+    ],
+    "inference_time_one_sample": [
+        0.011
+    ],
+    "inference_time_tot": [
+        1.197
+    ],
+    "trainable_parameters": [
+        104496
+    ]
+}
