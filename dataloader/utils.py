@@ -295,25 +295,42 @@ def plot_loss_acc_aug (epochs, training_loss_noaug, training_loss_aug, training_
   plt.tight_layout()  # This helps to prevent overlapping of subplots
   plt.show()
 
-def plot_cross_model_loss_acc (epochs, training_loss_tim, training_loss_timkan, training_acc_tim, training_acc_timkan):
+def plot_model_cross_tab_loss_acc (epochs, 
+                                   training_loss_cktim_tab1, 
+                                   training_loss_cktim_tab3, 
+                                   training_loss_cktim_tab6, 
+                                   training_loss_tim_tab1,
+                                   training_loss_tim_tab3,
+                                   training_loss_tim_tab6,
+                                   training_acc_cktim_tab1, 
+                                   training_acc_cktim_tab3, 
+                                   training_acc_cktim_tab6, 
+                                   training_acc_tim_tab1,
+                                   training_acc_tim_tab3,
+                                   training_acc_tim_tab6,
+                                   ):
 
   fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(14,6))
 
   # Set the functions, title, x_label, y_label and legend for the loss 
-  ax[0].plot(epochs, training_loss_tim, label='TIM-net', color='b')
-  ax[0].plot(epochs, training_loss_timkan, label='TIMkAN', color='r')
-  #ax[0].plot(epochs, training_loss_cktim, label='CkTIM', color='g')
-  #ax[0].plot(epochs, training_loss_cktimkan, label='CkTIMkAN', color='p')
+  ax[0].plot(epochs, training_loss_cktim_tab1, label='CkTIM TAB = 1', color='r')
+  ax[0].plot(epochs, training_loss_cktim_tab3, label='CkTIM TAB = 3', color='r')
+  ax[0].plot(epochs, training_loss_cktim_tab6, label='CkTIM TAB = 6', color='r')
+  ax[0].plot(epochs, training_loss_tim_tab1, label='TIM TAB = 1', color='b')
+  ax[0].plot(epochs, training_loss_tim_tab3, label='TIM TAB = 3', color='b')
+  ax[0].plot(epochs, training_loss_tim_tab6, label='TIM TAB = 6', color='b')
   ax[0].set_title('Training Loss')
   ax[0].set_xlabel('Epochs')
   ax[0].set_ylabel('Loss value')
   ax[0].legend()
 
   # Set the functions, title, x_label, y_label and legend for the loss 
-  ax[1].plot(epochs, training_acc_tim, label='TIM-net', color='b')
-  ax[1].plot(epochs, training_acc_timkan, label='TIMkAN', color='r')
-  #ax[0].plot(epochs, training_acc_cktim, label='CkTIM', color='g')
-  #ax[0].plot(epochs, training_acc_cktimkan, label='CkTIMkAN', color='p')
+  ax[1].plot(epochs, training_acc_cktim_tab1, label='CkTIM TAB = 1', color='r')
+  ax[1].plot(epochs, training_acc_cktim_tab3, label='CkTIM TAB = 3', color='r')
+  ax[1].plot(epochs, training_acc_cktim_tab6, label='CkTIM TAB = 6', color='r')
+  ax[1].plot(epochs, training_acc_tim_tab1, label='TIM TAB = 1', color='b')
+  ax[1].plot(epochs, training_acc_tim_tab3, label='TIM TAB = 3', color='b')
+  ax[1].plot(epochs, training_acc_tim_tab6, label='TIM TAB = 6', color='b')
   ax[1].set_title('Accuracy')
   ax[1].set_xlabel('Epochs')
   ax[1].set_ylabel('Accuracy value')
