@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 import torch.nn.functional as F  
-from convkan import ConvKAN
+from convkan.convkan_layer import ConvKAN
 from kafnets import KAF
 import numpy as np
 
