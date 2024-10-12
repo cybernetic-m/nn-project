@@ -19,10 +19,10 @@
         0.8658903206342706
     ],
     "inference_time_one_sample": [
-        0.169
+        0.17
     ],
     "inference_time_tot": [
-        18.956
+        18.984
     ],
     "trainable_parameters": [
         1380834
