@@ -1,4 +1,4 @@
-# <font size="5">Title: <span style="color:red">**C**</span>ontinuous <span style="color:red">**k**</span>ernel <span style="color:red">**T**</span>emporal-aware b<span style="color:red">**I**</span>-direction <span style="color:red">**M**</span>ulti-scale <span style="color:red">**net**</span>work (CkTIM-net) for **Speech Emotion Recognition** (SER)</font>
+# **C**ontinuous **k**ernel **T**emporal-aware b**I**-direction **M**ulti-scale **net**work (CkTIM-net) for **Speech Emotion Recognition**
 
 # Installation
 
