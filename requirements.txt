@@ -1,4 +1,3 @@
-convkan==0.0.1.2
 gdown==5.2.0
 hydra-core==1.3.2
 librosa==0.10.2.post1
