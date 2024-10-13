@@ -1,4 +1,4 @@
-# **C**ontinuous **k**ernel **T**emporal-aware b**I**-direction **M**ulti-scale **net**work (CkTIM-net) for **Speech Emotion Recognition**
+**C**ontinuous **k**ernel **T**emporal-aware b**I**-direction **M**ulti-scale **net**work (CkTIM-net) for **Speech Emotion Recognition**
 
 # Installation
 
