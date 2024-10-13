@@ -1,8 +1,4 @@
-# TO DO
-Max: Augmentation, Dynamic Fusion
-Paolo: Inizializzazione con Sine Activation
-
-# Title
+<font size='20'>**C**ontinuous **k**ernel **T**emporal-aware b**I**-direction **M**ulti-scale **net**work (CkTIM-net) for **Speech Emotion Recognition**</font>
 
 # Installation
 
