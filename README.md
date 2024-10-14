@@ -10,7 +10,7 @@ An interesting approach for convolutions is the Continuous Kernel Convolutions (
 
 Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Blocks substituting the Dilated Convolutions and in the input substituting the Poinwise Convolutions) to decrease the depth of the network using less Temporal Aware Blocks (TABs), permitting to enlarge the receptive field also with a very less numbers of TABs in the network.
 
-<font size="5">Proposed Method</font>
+## Proposed Method
 
 A lot of deep learning architectures improve performances in this task: as an example TIM-net [1] that is a novel temporal emotional modeling approach to learn multi-scale contextual affective representations from various time scale. 
 
