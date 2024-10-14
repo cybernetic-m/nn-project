@@ -10,9 +10,27 @@ An interesting approach for convolutions is the Continuous Kernel Convolutions (
 
 Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Blocks substituting the Dilated Convolutions and in the input substituting the Poinwise Convolutions) to decrease the depth of the network using less Temporal Aware Blocks (TABs), permitting to enlarge the receptive field also with a very less numbers of TABs in the network.
 
-The resulting network is:
+**General Pipeline**
 
-<img src="./images/cktim-net.jpg" alt="Description" width="300" height = "300" />
+
+<img src="./images/general-pipe.png" alt="Description" width="850" height = "300" />
+
+**Input Pipeline**
+
+
+<img src="./images/In-pipe.png" alt="Description" width="500" height = "200" />
+
+**CkTIM Network**
+
+
+<img src="./images/cktim.png" alt="Description" width="700" height = "300" />
+
+
+**TAB Blocks**
+
+
+<img src="./images/tab.png" alt="Description" width="550" height = "300" />
+
 
 ## INSTALLATION
 
