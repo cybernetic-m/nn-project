@@ -10,26 +10,51 @@ An interesting approach for convolutions is the Continuous Kernel Convolutions (
 
 Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Blocks substituting the Dilated Convolutions and in the input substituting the Poinwise Convolutions) to decrease the depth of the network using less Temporal Aware Blocks (TABs), permitting to enlarge the receptive field also with a very less numbers of TABs in the network.
 
-**General Pipeline**
+<font size="5">Proposed Method</font>
 
+A lot of deep learning architectures improve performances in this task: as an example TIM-net [1] that is a novel temporal emotional modeling approach to learn multi-scale contextual affective representations from various time scale. 
+
+An interesting approach for convolutions is the Continuous Kernel Convolutions (CkConv) for sequential data [2], that permits to handles arbitrarily long sequences, solving the problem that standard Convolutional neural networks have, because they cannot handle sequences of unknown size and their memory horizon must be defined a priori.
+
+Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Blocks substituting the Dilated Convolutions and in the input substituting the Poinwise Convolutions) to decrease the depth of the network using less Temporal Aware Blocks (TABs), permitting to enlarge the receptive field also with a very less numbers of TABs in the network.
+
+<font size="5">General Pipeline</font>
+
+We take the raw audio file, then apply a layer of preprocessing before passing the input to the TIM-net that will refine much more and separate them so that they can be recognized by a linear layer as classifier as the correct class.
 
 <img src="./images/general-pipe.png" alt="Description" width="850" height = "300" />
 
-**Input Pipeline**
+<font size="5">Input Pipeline</font>
 
+We take the raw audio file, process it, either augmenting it and the extracting the MFCC features, which are spectrograms or extracting the features directly.
 
 <img src="./images/In-pipe.png" alt="Description" width="500" height = "200" />
 
-**CkTIM Network**
+<font size="5">CkTIM Network</font>
 
+CkTIM then takes as input this spectrograms and reverses one in the time dimension and feeds each one to a line composed of one ckconv and then a series of **T**emporal **A**ware **B**locks, the output of each TAB is summed over the temporal dimension and with the corresponding TAB in the other temporal direction, this resulting vector is called g. We then do a weighted sum over g called dynamic fusion to get the features to the final classifier 
 
 <img src="./images/cktim.png" alt="Description" width="700" height = "300" />
 
 
-**TAB Blocks**
+<font size="5">TAB Blocks</font>
 
+inside each TAB there is a ckconv layer, which in turn is composed by:
+- a function that generates the relative positions
+- a generator that takes the relative positions and from those creates a convolutional kernel
+- a function to apply causal padding to the input
+- finally layer that applies the convolution between the input and the generated kernel
+
+after this layer, there is:
+- a batch normalization layer
+- a ReLU activation
+- spatial dropout
+- a sigmoid
+
+and finally there is also a skip connection that multiplies the input with the output to get the final output which is the g tensor of the previous step
 
 <img src="./images/tab.png" alt="Description" width="550" height = "300" />
+
 
 
 ## INSTALLATION
