@@ -22,13 +22,13 @@ Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Bloc
 
 We take the raw audio file, then apply a layer of preprocessing before passing the input to the CkTIM-net that will refine much more and separate them so that they can be recognized by a linear layer as classifier as the correct class.
 
-<img src="./images/general-pipe.png" alt="Description" width="850" height = "300" />
+<img src="./images/general-pipe.png" alt="Description" width="950" height = "300" />
 
 **Input Pipeline**
 
 We take the raw audio file, process it, either augmenting it and the extracting the MFCC features, which are spectrograms or extracting the features directly.
 
-<img src="./images/In-pipe.png" alt="Description" width="500" height = "200" />
+<img src="./images/In-pipe.png" alt="Description" width="550" height = "200" />
 
 **CkTIM Network**
 
@@ -53,7 +53,7 @@ after this layer, there is:
 
 and finally there is also a skip connection that multiplies the input with the output to get the final output which is the g tensor of the previous step
 
-<img src="./images/tab.png" alt="Description" width="550" height = "300" />
+<img src="./images/tab.png" alt="Description" width="650" height = "350" />
 
 
 
