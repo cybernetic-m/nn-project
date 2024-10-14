@@ -18,26 +18,26 @@ An interesting approach for convolutions is the Continuous Kernel Convolutions (
 
 Our idea was to implement CkConv inside the TIM-net (both on Temporal Aware Blocks substituting the Dilated Convolutions and in the input substituting the Poinwise Convolutions) to decrease the depth of the network using less Temporal Aware Blocks (TABs), permitting to enlarge the receptive field also with a very less numbers of TABs in the network.
 
-<font size="5">General Pipeline</font>
+**General Pipeline**
 
-We take the raw audio file, then apply a layer of preprocessing before passing the input to the TIM-net that will refine much more and separate them so that they can be recognized by a linear layer as classifier as the correct class.
+We take the raw audio file, then apply a layer of preprocessing before passing the input to the CkTIM-net that will refine much more and separate them so that they can be recognized by a linear layer as classifier as the correct class.
 
 <img src="./images/general-pipe.png" alt="Description" width="850" height = "300" />
 
-<font size="5">Input Pipeline</font>
+**Input Pipeline**
 
 We take the raw audio file, process it, either augmenting it and the extracting the MFCC features, which are spectrograms or extracting the features directly.
 
 <img src="./images/In-pipe.png" alt="Description" width="500" height = "200" />
 
-<font size="5">CkTIM Network</font>
+**CkTIM Network**
 
 CkTIM then takes as input this spectrograms and reverses one in the time dimension and feeds each one to a line composed of one ckconv and then a series of **T**emporal **A**ware **B**locks, the output of each TAB is summed over the temporal dimension and with the corresponding TAB in the other temporal direction, this resulting vector is called g. We then do a weighted sum over g called dynamic fusion to get the features to the final classifier 
 
 <img src="./images/cktim.png" alt="Description" width="700" height = "300" />
 
 
-<font size="5">TAB Blocks</font>
+**TAB Blocks**
 
 inside each TAB there is a ckconv layer, which in turn is composed by:
 - a function that generates the relative positions
