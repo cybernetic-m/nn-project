@@ -219,7 +219,7 @@ In this table it's possible to see how augmentation increase performances in the
 
 In this section we'll comment the confusion matrix in the case of CkTIM and TIM with TAB=6 without augmentation, and the CkTIM with TAB=6 with augmentation.
 
-<img src="./images/confusion-matricies.png" alt="Description" width="1000" height = "350" />
+<img src="./images/confusion-matricies.png" alt="Description" width="800" height = "300" />
 
 In particular it's possible to notice also visually that the augmentation technique improves classification performances for "paura" and "rabbia" classes (16/16 correct classification). The CkTIM augmented perform well in this discriminative task, but have still difficulty in discriminate "paura" and "tristezza", "sorpresa" and "gioia", that are similar emotions!
 
