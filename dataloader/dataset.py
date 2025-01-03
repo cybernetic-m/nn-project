@@ -5,13 +5,12 @@ import torch
 import numpy as np
 from feature_extractor import feature_extractor
 
+class SER_Dataset(Dataset):
 
-class EMOVO_Dataset(Dataset):
-
-  def __init__(self, dataset_dir, feature_extract=False, mfcc_np = False, device = 'cpu'):
+  def __init__(self, dataset_dir, classes=['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri'], feature_extract=False, mfcc_np = False, device = 'cpu'):
 
     self.dataset_dir = dataset_dir
-    self.classes = ['dis', 'gio', 'neu', 'pau', 'rab', 'sor', 'tri']
+    self.classes = classes
     self.data = [] # Waw Audio as tensors
     self.labels = [] # Labels of the data
     
@@ -66,3 +65,4 @@ class EMOVO_Dataset(Dataset):
   def get_info(self):
     n_sample = [ self.labels.count(class_) for class_ in range(len(self.classes))]
     return n_sample
+  
